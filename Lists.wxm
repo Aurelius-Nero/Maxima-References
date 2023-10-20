@@ -1,0 +1,49 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 22.04.0 ] */
+/* [wxMaxima: input   start ] */
+/* Date: 20/03/2014 */
+/* Contributor: Pankaj Sejwal */
+/* Description: Tries to return the entries and the indexes that satisfies a predicate for first and single time */
+takewhile(x,p):=block(
+    [s:1,temp:[],temp1:[],count:1,xx:create_list([x[i],i],i,makelist(i,i,length(x)))],
+    for i in xx do if apply(p,[first(i)])  then temp:cons(i,temp),
+    temp:reverse(temp),
+    if (length(temp)>=2 and flatten(temp)#[]) then (
+        while(last(temp[s])+1=last(temp[s+1]) and count<=length(temp)) do (
+            temp1:cons(temp[s],temp1),
+            count:count+1,
+            s:s+1
+        ),
+        if (s<length(temp)) then temp1:cons(temp[s],temp1)
+    ) 
+    else temp1:temp,
+    reverse(temp1)
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: 20/03/2014 */
+/* Contributor: Pankaj Sejwal */
+/* Description: Tries to return the entries and the indexes that satisfies a predicate for first and single time */
+takewhile1(x,p):=block(
+    [s:1,temp:[],temp1:[],count:1,xx:create_list([x[i],i],i,makelist(i,i,length(x)))],
+    for i in xx do (if parse_string(concat(first(i),p))  then temp:cons(i,temp)),
+    temp:reverse(temp),
+    if(length(temp)>=2 and flatten(temp)#[]) then (
+        while (last(temp[s])+1=last(temp[s+1]) and count<=length(temp)) do (
+            temp1:cons(temp[s],temp1),
+            count:count+1,
+            s:s+1
+        ),
+        if(s<length(temp)) then temp1:cons(temp[s],temp1)
+    )
+    else temp1:temp,
+    reverse(temp1)
+)$
+/* [wxMaxima: input   end   ] */
+
+
+
+/* Old versions of Maxima abort on loading files that end in a comment. */
+"Created with wxMaxima 22.04.0"$
