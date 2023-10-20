@@ -1,0 +1,62 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 22.04.0 ] */
+/* [wxMaxima: input   start ] */
+/* Date: Sat Dec 21 06:35:10 WET 2013 */
+/* Contributor: Mike Valenzuela */
+/* Description: Tries to return the power of a matrix */
+/* Known issues: Yes */
+matrix_power(A, t):=block(
+    [A_, A_list, B_, B_list, eqs, eigvals, i, j, k,numeq, tt, solvedeq, offset],
+    /* Initialize Variables */
+    /* This is the value we set t to this value */
+    offset: 1,
+    /* The number of equations */
+    numeq: length(A),
+    /* The list of relevant variables */
+    eqs: makelist(0,i,1,numeq),
+    A_list: makelist( A_^^(i+offset)=tt,i,0,numeq-1),
+    B_list: makelist( B_[i],i,1,numeq),
+    
+    /* Exact Eigenvalues and calculate powers of A */
+    eigvals:(radcan(fullratsimp(eivals(A)))),
+    for i:1 thru numeq do block(
+        [],
+        A_list[i]: at( A_list[i], tt=A^^(i+offset-1))
+    ),
+    A_list : reverse(A_list),
+    
+    /* Setup the first equation */
+    k:1,
+    eqs[1]: 0,
+    for i:1 thru length(eigvals[1]) do block(
+        [],
+        for j:1 thru eigvals[2][i] do block (
+            [],
+            eqs[1]: eqs[1] + B_list[k] * t^(j-1) * eigvals[1][i]^t,
+            k:k+1
+        )
+    ),
+    eqs[1]: A_^^t = eqs[1],
+    
+    /* Generate all the necessary equations */
+    for i:2 thru numeq do block(
+        [],
+        eqs[i]: at(eqs[i-1], [t=1+tt]),
+        eqs[i]: at(eqs[i], [tt=t])
+    ),
+    
+    /* Set t=offset and solve the equations */
+    solvedeq: linsolve( at(eqs, t=offset), B_list ),
+    
+    /* Substitute the symbolic A_^k with the calculation */
+    solvedeq: factorsum(radcan(at( solvedeq, A_list))),
+    
+    /* Substitute the resulting equations into eq0 */
+    return( rhs(at(eqs[1], solvedeq ) ) )
+)$
+/* [wxMaxima: input   end   ] */
+
+
+
+/* Old versions of Maxima abort on loading files that end in a comment. */
+"Created with wxMaxima 22.04.0"$
