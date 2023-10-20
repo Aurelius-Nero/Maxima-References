@@ -1,0 +1,29 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 22.04.0 ] */
+/* [wxMaxima: input   start ] */
+/* Date: Wed Dec 28 20:19:35 WET 2011 */
+/* Contributor: John Lapeyre */
+/* Description: Returns the signature of a permutation */
+SignaturePermutation(inp) := block(
+    [ n:length(inp), k, visited , p, knext, L, sgn:1],
+    visited : make_array(any,n),
+    p : make_array(any,n),
+    fillarray(p,inp),
+    for k : 0 thru n-1 do (
+        if not visited[k] then (
+            knext : k,
+            L : 0,
+            while not visited[knext] do (
+                L : L + 1,
+                visited[knext] : true,
+                knext : p[knext]-1 ),
+            if evenp(L) then sgn : -sgn )
+    ),
+    sgn
+)$
+/* [wxMaxima: input   end   ] */
+
+
+
+/* Old versions of Maxima abort on loading files that end in a comment. */
+"Created with wxMaxima 22.04.0"$
