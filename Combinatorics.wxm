@@ -1,6 +1,21 @@
 /* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
 /* [ Created with wxMaxima version 22.04.0 ] */
 /* [wxMaxima: input   start ] */
+/* Date: Sun, Feb 22, 2009 */
+/* Contributor: Barton Willis */
+/* Description: Difference operator */
+diff_rec2(exp,i, [n]):=(
+    n : if n = [] then 1 else first(n),
+    if integerp(n) and n > -1 then (
+        while n > 0 do (
+            exp : sublis([i = i + 1], exp) - exp,
+            n : n - 1),
+        exp) 
+    else funmake('diff_rec2, [exp,i,n]))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
 /* Date: Wed Dec 28 20:19:35 WET 2011 */
 /* Contributor: John Lapeyre */
 /* Description: Returns the signature of a permutation */
