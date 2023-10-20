@@ -1,6 +1,28 @@
 /* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
 /* [ Created with wxMaxima version 22.04.0 ] */
 /* [wxMaxima: input   start ] */
+/* Date: Wed Nov 18 11:20:39 WET 2009 */
+/* Contributor: Stefano Ferri */
+/* Description: Tries to handle submatrices */
+subm ( _m, _rows, _cols ) := block(
+    [i,j,_x],
+    if not matrixp(_m) then error("First input must be a matrix"),
+    if not listp(_rows) and not integerp(_rows) then error("Second input must be a list of rows or a single integer"),
+    if not listp(_cols) and not integerp(_cols) then error("Third input must be a list of columns or a single integer"),
+    if not listp(_rows) and integerp(_rows) then _rows : [_rows],
+    if not listp(_cols) and integerp(_cols) then _cols : [_cols],
+    for i in _rows do if not integerp(i) or i<=0 then error("Elements in rows list must be integers > 0"),
+    for i in _cols do if not integerp(i) or i<=0 then error("Elements in columns list must be integers > 0"),
+    for i in _rows do if i>matrix_size(_m)[1] then error("Row indices must be less or equal than the total number of rows"),
+    for i in _cols do if i>matrix_size(_m)[2] then error("Column indices must be less or equal than the total number of columns"),
+    _rows : sort(unique(_rows)),
+    _cols : sort(unique(_cols)),
+    return(genmatrix(lambda([i,j],_m[_rows[i],_cols[j]]),length(_rows),length(_cols)))
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
 /* Date: Sat Dec 21 06:35:10 WET 2013 */
 /* Contributor: Mike Valenzuela */
 /* Description: Tries to return the power of a matrix */
