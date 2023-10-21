@@ -91,6 +91,17 @@ ff2(n) := setify(xreduce('append, makelist(makelist(i/j,i,0,j), j,floor(n/2), n)
 
 
 /* [wxMaxima: input   start ] */
+/* Date: Sun Oct 17 23:29:22 WEST 2004 */
+/* Contributor: Stavros Macrakis */
+/* Description: A code for modular exponentiation */
+modexpt(a,b,modulus):=block(
+    [result],
+    result: ratdisrep( rat(a)^b ),
+    if result>=0 then result else result+modulus)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
 /* Date: Mon Nov 21 16:32:15 WET 2011 */
 /* Contributor: Stavros Macrakis */
 /* Description: A code for polynomial reduction in finite fields */
