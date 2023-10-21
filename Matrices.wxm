@@ -2,7 +2,7 @@
 /* [ Created with wxMaxima version 22.04.0 ] */
 /* [wxMaxima: input   start ] */
 /* Date: Sun Aug 10 17:34:13 WEST 2008 */
-/* Contributor: Volker van Nek */
+/* Contributor: Volker van Nek  */
 /* Description: Code for gaussian elimination */
 gaussian_elimination (A) := block( [i, j, m, n, maxi, listarith:true],
    m:length(args(A)), 
@@ -49,6 +49,20 @@ subm ( _m, _rows, _cols ) := block(
     _cols : sort(unique(_cols)),
     return(genmatrix(lambda([i,j],_m[_rows[i],_cols[j]]),length(_rows),length(_cols)))
 )$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Sat Oct 27 11:21:07 WEST 2007 */
+/* Contributor: Peter Danenberg */
+/* Description: Insert the matrix B after the i-th row of A */
+insertrows(A, B, i) := block(
+    [n],
+    head(A, n) :=if n > 0 then head(submatrix(length(A), A), n - 1) else A,
+    tail(A, n) :=if n > 0 then tail(submatrix(1, A), n - 1) else A,
+    n: length(A),
+    addrow(head(A, n - i), B, tail(A, i))
+);
 /* [wxMaxima: input   end   ] */
 
 
