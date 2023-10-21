@@ -1,6 +1,14 @@
 /* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
 /* [ Created with wxMaxima version 22.04.0 ] */
 /* [wxMaxima: input   start ] */
+/* Date: Sun Oct 18 09:41:19 WEST 2015 */
+/* Contributor: Marco Verpelli */
+/* Description: Code for retrieving the nth element of a list (the "else last(l)" can be ommitted putting <= instead of <) */
+nth(l, n) := if n < length(l) then first(rest(l, n-1)) else last(l);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
 /* Date: 20/03/2014 */
 /* Contributor: Pankaj Sejwal */
 /* Description: Tries to return the entries and the indexes that satisfies a predicate for first and single time */
