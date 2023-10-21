@@ -1,0 +1,95 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 22.04.0 ] */
+/* [wxMaxima: input   start ] */
+/* Date: Mon Jun 14 22:06:34 WEST 2010 */
+/* Contributor: Eric Reyssat */
+/* Description: Farey sequence */
+fc2(n):=block(
+    L:[[0,1]],a:0,b:1,c:1,d:n,
+    while 2*c<d do (
+        k:floor ((b+n)/d),
+        e:k*c-a,
+        f:k*d-b,
+        a:c,
+        b:d,
+        c:e,
+        d:f, 
+        L:cons([a,b],L)
+    ),
+    append(reverse(L) , [[1,2]] , map(lambda([x],[x[2]-x[1],x[2]]),L))
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Mon Jun 14 22:22:14 WEST 2010 */
+/* Contributor: Starvros Macrakis */
+/* Description: Farey sequence */
+fc3(n):=block(L:[0],a:0,b:1,c:1,d:n,
+    while 2*c < d do (
+        k:floor((b+n)/d),
+        e:k*c-a,
+        f:k*d-b,
+        a:c,
+        b:d,
+        c:e,
+        d:f,
+        L:cons(a/b,L)
+    ),
+    append(reverse(L),[1/2],1-L)
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Tue Jun 15 03:22:16 WEST 2010 */
+/* Contributor: Barton Willis */
+/* Description: Farey sequence */
+h(n) := block(
+    [d,j,l : [[0],[1]]],
+    d : setify(makelist(i,i,floor(n/2),n)),
+    while not emptyp(d) do (
+        j : last(d),
+        d : setdifference(d, divisors(j)),
+        l : cons(makelist(i/j,i,1,j-1),l)
+    ),
+    setify(xreduce('append,l))
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Tue Jun 15 18:02:41 WEST 2010 */
+/* Contributor: Adam Majewski */
+/* Description: Farey sequence */
+F(n):=block(
+    [a],
+    a:[0/1,1/1],
+    if n>=2 then 
+    for denominator:2 thru n step 1 do 
+    for numerator:1 thru (denominator-1) step 1 do 
+    a:cons(numerator/denominator,a),
+    return(setify(a))
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Sun Jun 13 22:02:36 WEST 2010 */
+/* Contributor: Barton Willis */
+/* Description: Farey sequence */
+ff(n) := setify(xreduce('append, makelist(makelist(i/j,i,0,j), j,1, n)))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Mon Jun 14 07:46:18 WEST 2010 */
+/* Contributor: Eric Reyssat */
+/* Description: Farey sequence */
+ff2(n) := setify(xreduce('append, makelist(makelist(i/j,i,0,j), j,floor(n/2), n)))$
+/* [wxMaxima: input   end   ] */
+
+
+
+/* Old versions of Maxima abort on loading files that end in a comment. */
+"Created with wxMaxima 22.04.0"$
