@@ -2,7 +2,7 @@
 /* [ Created with wxMaxima version 22.04.0 ] */
 /* [wxMaxima: input   start ] */
 /* Date: Sun Aug 10 17:34:13 WEST 2008 */
-/* Contributor: Volker van Nek  */
+/* Contributor: Volker van Nek */
 /* Description: Code for gaussian elimination */
 gaussian_elimination (A) := block( [i, j, m, n, maxi, listarith:true],
    m:length(args(A)), 
