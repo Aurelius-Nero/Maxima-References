@@ -1,15 +1,28 @@
 /* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
 /* [ Created with wxMaxima version 22.04.0 ] */
 /* [wxMaxima: input   start ] */
+/* Date: Tue Apr 16 22:40:26 WEST 2013 */
+/* Contributor: Stavros Macrakis */
+/* Description: Returns the coefficients of an univariate polynomial (in this form does not work; it is necessary to put p:rat(p,v) in the list of variables of the block) */
+coefs(p,v):=block(
+    [l:[]],
+    while p # 0 do (
+        l:cons(r:ratcoef(p,v,0),l),
+        p:(p-r)/v),
+    l
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
 /* Date: Fri Apr 19 10:10:53 WEST 2013 */
 /* Contributor: Wilhelm Haager */
 /* Description: Lists the coefficients of a univariate polynomial n ascendin order 
 (for the usual order for polynomials put makelist(i,i,n,0,-1) instead of makelist(i,i,0,n) */
-coefficient_list(p,s) :=
-block(
-  [n:floor(hipow(p,s))],
-  p:expand(p),
-  map(lambda([u],coeff(p,s,u)),makelist(i,i,0,n))
+coefficient_list(p,s) :=block(
+        [n:floor(hipow(p,s))],
+        p:expand(p),
+        map(lambda([u],coeff(p,s,u)),makelist(i,i,0,n))
 )$
 /* [wxMaxima: input   end   ] */
 
