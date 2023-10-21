@@ -1,0 +1,18 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 22.04.0 ] */
+/* [wxMaxima: input   start ] */
+/* Date: Wed Dec 6 20:51:58 WET 2006 */
+/* Contributor: Barton Willis */
+/* Description: Conversion to binary reversed (for the correct order replace cons instead of endcons) */
+bits(n) := block(
+    [l : []],
+    while n # 0 do (
+        l : endcons(mod(n, 2), l),
+        n : floor(n / 2)),
+    l)$
+/* [wxMaxima: input   end   ] */
+
+
+
+/* Old versions of Maxima abort on loading files that end in a comment. */
+"Created with wxMaxima 22.04.0"$
