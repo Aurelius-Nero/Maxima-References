@@ -1,6 +1,77 @@
 /* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
 /* [ Created with wxMaxima version 22.04.0 ] */
 /* [wxMaxima: input   start ] */
+/* Date: Thu Oct 17 21:51:40 WEST 2013 */
+/* Contributor: Adam Majewski */
+/* Description: Routine for repeating decimals (as it is this gives some warnings) */
+
+/* functions */
+
+/* give decimal digit D of the long division step */
+GiveD(leftover,divisor) := ceiling(float((10*leftover - divisor)/divisor))$
+
+/* Give leftover for next step of long division */
+GiveL(leftover,DecimalDigit,divisor) := 10*leftover - DecimalDigit*divisor$
+
+/* ratio in lowest terms
+   not working now
+*/
+GiveRatioType(ratio):=
+(
+   [numerator:num(ratio), FactorsList],
+   FactorsList:ifactors(numerator),
+   for f in FactorsList do if (first(first(f))!=2 and first(first(f))!=5)
+      then return("repeating decimal expansion")
+      else return("finite decimal expansion")
+)$
+
+compile(all)$
+
+/* input numbers*/
+a:19 $
+b:27 $
+
+/* automatic change to lowest terms */
+dRatio:a/b;
+/* GiveRatioType(dRatio); */
+a: num(dRatio);
+b: denom(dRatio);
+
+dFloat:0.0 $  /* quotient */
+k:0$ /* current position of decimal digit */
+LeftoverList:[]$ /* list of leftovers */
+
+/* Long Division of positive integers to Decimal Places ( without 
+remainder ) */
+
+/* first step */
+L:a$
+D:GiveD(L, b)$
+k:k-1$
+dFloat:dFloat +D*10^k$ /* save new digit to output float */
+LeftoverList:cons(L,LeftoverList)$
+disp(L,D)$
+
+/* nest steps */
+
+L:GiveL(L, D, b)$
+while (not member(L,LeftoverList))  /* test for the end of repeating 
+sequence */
+do
+  (
+   D:GiveD(L, b),
+   k:k-1,
+   dFloat:dFloat +D*10^k, /* save new digit to output float */
+   LeftoverList:cons(L,LeftoverList),
+   disp(L,D),
+   L:GiveL(L, D, b)
+  )$
+
+disp(dFloat)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
 /* Date: Mon Jun 14 22:06:34 WEST 2010 */
 /* Contributor: Eric Reyssat */
 /* Description: Farey sequence */
