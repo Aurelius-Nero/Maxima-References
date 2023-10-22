@@ -13,6 +13,29 @@ bits(n) := block(
 /* [wxMaxima: input   end   ] */
 
 
+/* [wxMaxima: input   start ] */
+/* Date: 2016-09-21 19:35 GMT+02:00 */
+/* Contributor: Stavros Macrakis */
+/* Description: Transform a float to rational */
+read_rationalizing_floats(prompt):=block(
+    [simp:false,ratprint:false, answer],
+    answer:read(prompt),
+    scanmap(lambda([ex],if floatnump(ex) or bfloatp(ex) then rat(ex) else ex),answer)
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Wed, Sep 21, 2016 at 1:39 PM */
+/* Contributor: David Scherfgen */
+/* Description: Transform a float to rational (it is presented as a macro, but that's not needed) */
+rationalize_numbers(expression) ::= block(
+    [ratprint : false,simp : false],
+    scanmap(lambda([e], if floatnump(e) or bfloatp(e) then ratdisrep(rat(e)) else e), expression)
+)$
+/* [wxMaxima: input   end   ] */
+
+
 
 /* Old versions of Maxima abort on loading files that end in a comment. */
 "Created with wxMaxima 22.04.0"$
