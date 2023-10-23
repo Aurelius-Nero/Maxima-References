@@ -162,6 +162,23 @@ ff2(n) := setify(xreduce('append, makelist(makelist(i/j,i,0,j), j,floor(n/2), n)
 
 
 /* [wxMaxima: input   start ] */
+/* Date: Tue, 13 Jun 2006 19:38:53 +0200 */
+/* Contributor: Andrej Vodopivec */
+/* Description: Implementation of Fermat factorization */
+factor_fermat(n) := block(
+    [a, b],
+    a : isqrt(n),
+    b : a*a-n,
+    while isqrt(b)#sqrt(b) do (
+        a : a+1,
+        b : a*a-n
+    ),
+    return(a-isqrt(b))
+    )$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
 /* Date: Sun Oct 17 23:29:22 WEST 2004 */
 /* Contributor: Stavros Macrakis */
 /* Description: A code for modular exponentiation */
