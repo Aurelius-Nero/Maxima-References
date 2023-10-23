@@ -1,0 +1,17 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 22.04.0 ] */
+/* [wxMaxima: input   start ] */
+/* Date: Wed, 6 Sep 2006 15:29:38 -0400 */
+/* Contributor: Stavros Macrakis */
+/* Description: Function like factorsum, but more general */
+partition_factor(ex):=block(
+    [s,op,inflag:true],
+    if atom(ex) or op(ex) # "+" then set(set(ex)) else s: set_partitions(setify(args(ex))),
+    map(lambda([q],xreduce("+",map(lambda([r],factor(xreduce("+",args(r)))),q))),s)
+)$
+/* [wxMaxima: input   end   ] */
+
+
+
+/* Old versions of Maxima abort on loading files that end in a comment. */
+"Created with wxMaxima 22.04.0"$
