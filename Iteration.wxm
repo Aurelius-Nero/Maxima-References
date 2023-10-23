@@ -1,0 +1,36 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 22.04.0 ] */
+/* [wxMaxima: input   start ] */
+/* Date: Fri Jul 7 23:45:18 WEST 2006 */
+/* Contributor: Raindrop */
+/* Description: Iterates b times f over the initial point a */
+nest(f,a,b):=block(
+    [erg],
+    erg:a,
+    for tmp:0 while tmp<b do (
+        erg:f(erg)
+    ),
+    return(erg)
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Sun Jul 9 17:26:16 WEST 2006 */
+/* Contributor: Barton Willis */
+/* Description: Iterates n times f over the initial point x */
+nest(f,x,n) := if n = 0 then x else nest(f, funmake(f,[x]), n-1);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Wed Sep 3 11:32:50 WEST 2008 */
+/* Contributor: John Lapeyre */
+/* Description: Iterates n times f% over the initial point x */
+nest(f%,x,n) := if n=0 then x else if n=1 then apply(f%,[x]) else apply(f%,[nest(f%,x,n-1)]);
+/* [wxMaxima: input   end   ] */
+
+
+
+/* Old versions of Maxima abort on loading files that end in a comment. */
+"Created with wxMaxima 22.04.0"$
