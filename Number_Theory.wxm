@@ -1,6 +1,63 @@
 /* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
 /* [ Created with wxMaxima version 22.04.0 ] */
 /* [wxMaxima: input   start ] */
+/* Date: Mon Jun 4 07:39:28 WEST 2001 */
+/* Contributor: William Schelter */
+/* Description: Implementation of extended euclidean algorithm */
+gcdex(f,g):=block(
+    [q0,q1,ok:true,lis1,lis2,lis3,q,tem,var:listofvars([f,g]),swap:false],
+    if (length(var) > 1) then merror("only univariate polynomials"),
+    var:var[1],
+    q0:divide(f,g),   /* divide(f,g) ==> [q:quotient(f,g),remainder:f-g*q] */
+	      /* if f/g is 0 then we reverse them */
+    if (q0[1]=0) then (
+        lis2:gcdex(g,f),
+        return([lis2[2],lis2[1],lis2[3]])
+    ),
+    if (q0[2]=0) then return([0,1,g]),
+    q1:divide(g,q0[2]),
+    lis1:[1,-q0[1],q0[2]],
+    if (q1[2]=0) then (
+        if numberp(lis1[3]) then lis1:lis1/lis1[3],
+        return(lis1)),
+      /* lisi are always perpendicular to [f,g,-1] */
+    lis2:[-q1[1],1+q0[1]*q1[1], q1[2]],
+    while (ok) do (
+        q:divide(lis1[3],lis2[3]),
+        lis3:ratsimp(lis1-lis2*q[1]),
+        tem:content(lis3[3],var)[1],
+        if (not(tem=0)) then lis3:ratsimp(lis3/tem),
+        if(lis3[3] = 0) then ok:false else (lis1:lis2, lis2:lis3)
+    ),
+    if numberp(lis2[3]) then lis2/lis2[3] else lis2
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Mon Jun 4 18:20:46 WEST 2001 */
+/* Contributor: Richard Fateman */
+/* Description: Implementation of extended euclidean algorithm */
+gcdex1(m,n,x):=
+/* Given 2 expressions m and n in x, we compute their
+GCD and two multipliers a and b such that a*m+b*n=d.
+Knuth vol 1 algorithm E */
+block(
+    [ap,b,bp,r:1,q],
+    [ap,b,a,bp,m,n]:[1,1,0,0,rat(m,x),rat(n,x)],
+    loop,
+    [q,r]:divide(m,n,x),
+    if(r=0) then   [a,b,n]/content(n,x)[1] else (
+        [m,n,t]:[n,r,ap],
+        [ap,a,t,bp]: [a,t-q*a,bp,b],
+        b:t-q*b,
+        go (loop)
+    )
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
 /* Date: Thu Oct 17 21:51:40 WEST 2013 */
 /* Contributor: Adam Majewski */
 /* Description: Routine for repeating decimals (as it is this gives some warnings) */
