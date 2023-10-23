@@ -1,6 +1,27 @@
 /* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
 /* [ Created with wxMaxima version 22.04.0 ] */
 /* [wxMaxima: input   start ] */
+/* Date: Mon Jun 4 07:39:27 WEST 2001 */
+/* Contributor: William Schelter  */
+/* Description: List of matrix entries */
+ListMatrixEntries(m):=block(
+    [ans:[]],
+    for v in m do ans:append(ans,v),
+    ans
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Mon Jun 4 15:56:51 WEST 2001 */
+/* Contributor: Richard Fateman  */
+/* Description: List of matrix entries */
+/* Note: If used this function should be renamed (it is named the same as the previous one) */
+ListMatrixEntries (M):=  apply (append, substinpart("[",M,0))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
 /* Date: Sun Aug 10 17:34:13 WEST 2008 */
 /* Contributor: Volker van Nek  */
 /* Description: Code for gaussian elimination */
