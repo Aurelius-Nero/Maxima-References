@@ -9,6 +9,14 @@ nth(l, n) := if n < length(l) then first(rest(l, n-1)) else last(l);
 
 
 /* [wxMaxima: input   start ] */
+/* Date: Fri Aug 4 17:06:41 WEST 2006 */
+/* Contributor: Richard Fateman */
+/* Description: Filters a list with respect to a predicate (as sublist does) */
+filter(l,pred):= if (l=[]) then [] else if pred(first(l)) then cons(first(l),filter(rest(l),pred)) else filter(rest(l),pred)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
 /* Date: 20/03/2014 */
 /* Contributor: Pankaj Sejwal */
 /* Description: Tries to return the entries and the indexes that satisfies a predicate for first and single time */
