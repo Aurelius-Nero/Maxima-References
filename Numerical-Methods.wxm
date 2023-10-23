@@ -1,0 +1,36 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 22.04.0 ] */
+/* [wxMaxima: input   start ] */
+/* Date: Tue Jan 6 08:11:19 WET 2009 */
+/* Contributor: Luigi Marino */
+/* Description: Implementation of bisection method */
+segno(x):=block(
+    [],
+    if x=0 then return(0) else (if x>0 then return(1) else return(-1) )
+)$
+bisez(funz,var,a,b,eps,numiter):=block(
+    [fa,fb,fc,c,l,k],
+    define(f(var),funz),
+    fa:f(a),
+    fb:f(b),
+    l:abs(b-a),
+    k:0,
+    if segno(fa)#segno(fb) then do (
+        k:k+1,
+        l:l/2.0,
+        c:ev(a+(b-a)/2.0,float),
+        fc:f(c),
+        if (fc=0.0 or l<eps or k>numiter) then (
+            print("c=",c," in ",k," iterazioni"),
+            return(fine)
+        ) else (
+            if (segno(fa)*segno(fc)>0) then (a:c, fa:fc) else (b:c, fb:fc) 
+        )
+    )
+)$
+/* [wxMaxima: input   end   ] */
+
+
+
+/* Old versions of Maxima abort on loading files that end in a comment. */
+"Created with wxMaxima 22.04.0"$
