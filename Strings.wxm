@@ -1,0 +1,159 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 22.04.0 ] */
+/* [wxMaxima: input   start ] */
+/* Date: Fri Jul 16 01:54:34 WEST 2004 */
+/* Contributor: Dan Stanger */
+/* Description: Returns the length of the symbol s as a string */
+string_length(s):=block(?length(?symbol\-name(s)) -1)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Fri Jul 16 01:54:34 WEST 2004 */
+/* Contributor: Dan Stanger */
+/* Description: Downcases the symbol s as a string, the output remains a symbol */
+string_upcase(s):=block(?intern(?string\-upcase(?symbol\-name(s))))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Fri Jul 16 01:54:34 WEST 2004 */
+/* Contributor: Dan Stanger */
+/* Description: Returns the substring of the symbol s as a string, the output remains a symbol */
+/* Note: Maybe it will be necessary to comment /* ?symbol\-name(""), */ in order to work */
+substring(s,i,j):=block(
+    j:min(j,string_length(s)),
+    ?intern(?concatenate(?string,?symbol\-name(""),?subseq(?symbol\-name(s),i,j+1)))
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Thu Jun 2 22:31:54 WEST 2011 */
+/* Contributor: Edwin Woollett */
+/* Description: finds the string position of the n'th appearance of
+the substring, ignoring distinctness. Returns false if  no n'th appearance. */
+sloc(bs,bo,bn) :=block (
+    [lbs,lbo,nbs,nsearch:0  ],
+    lbs : slength (bs),
+    lbo : slength (bo),
+    /* search for first substring location */
+    nbs : ssearch (bo,bs,sequal,1),
+    nsearch : nsearch + 1,
+    if not nbs then return (false),
+    if nsearch = bn then return (nbs),
+    if nbs + lbo -1 = lbs then return(false),
+    do (
+        nsearch : nsearch + 1,
+        nbs : ssearch (bo,bs,sequal,nbs+1),
+        if not nbs then return(),
+        if nsearch = bn then return(),
+        if nbs + lbo -1 = lbs then return()
+    ),
+    nbs
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Thu Jun 2 22:31:54 WEST 2011 */
+/* Contributor: Edwin Woollett */
+/* Description: returns either true or false depending on whether the text substring
+      (beginning at nbegin and having length nlength) is a separate word. */
+sword1 (%ms,%p,%q) :=block (
+    [%sleft:false,%sright:false ],
+    /* check left hand side of substring */
+    if (%p = 1) or (not alphanumericp (charat (%ms,%p - 1))) then %sleft : true,
+    /* now check right hand side */
+    if (%p + %q - 1 = slength (%ms)) or (not alphanumericp (charat (%ms,%p + %q))) then %sright : true,
+    if %sleft and %sright then true else false 
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Thu Jun 2 22:31:54 WEST 2011 */
+/* Contributor: Edwin Woollett */
+/* Description: starts search at char pos nstart and returns false if text substring is not
+      found or if text substring is found but is not a separate word.
+      Otherwise returns the postion of the start of the first text substring
+      found. */
+sword (%ls,%ss,%nstart) :=block (
+    [%ln,%sl,%ns,%nnew,%sep ],
+    %ln : slength (%ls),
+    %sl : slength (%ss),
+    %ns : ssearch (%ss,%ls,sequal,%nstart),
+    /* if substring is not found in
+          the string beginning the
+          search at %nstart, ssearch returns
+          false */
+    if not %ns then return(false),
+    /* here we know %ns is some integer 
+          and is the position of the first
+          substring found so far */
+    /* check if it is a separate word */
+    %sep : sword1 (%ls,%ns,%sl),
+    if %sep then return(%ns),
+    /* is substring found at end of the line? */
+    if %ns + %sl -1 = %ln then return (false),
+    /* search for possible next substring */
+    %nnew : %ns + 1,
+    do (
+        %ns : ssearch (%ss,%ls,sequal,%nnew),
+        if not %ns then return(),
+        if sword1(%ls,%ns,%sl) then return(),
+        if %ns + %sl -1 = %ln then (
+            %ns : false,return()
+        ) else %nnew : %ns + 1
+    ),
+    %ns
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Thu Jun 2 22:31:54 WEST 2011 */
+/* Contributor: Edwin Woollett */
+/* Description: replaces all *distinct* text substrings
+          by snew and returns a new string. */
+text_replace ([%w]) :=block (
+    [sn,so,as,%mode:distinct,lso,lsn,nloc,n1,as1],
+    sn : part (%w,1),
+    so : part (%w,2),
+    as : part (%w,3),
+    if length (%w) > 3 then %mode : part (%w,4),
+    if listp (%mode) then (
+        disp (" fourth arg cannot be a list "),
+        return (as)
+    ),
+    if integerp (%mode) then (
+        nloc : sloc (as,so,%mode),
+        if not nloc then (
+            disp (" string does not contain that many substrings"),
+            return (as)
+        ),
+        return (ssubstfirst (sn,so,as,nloc))),
+    if %mode = all then return (ssubst (sn,so,as)),
+    /* case only subst for distinct separate 
+             words (the default case)  */
+    lso : slength(so),
+    lsn : slength(sn),
+    n1 : sword (as,so,1),
+    if not n1 then return (as),
+    as1 : ssubstfirst(sn,so,as,sequal,n1,n1+lso),
+    /* is that the end of the string as1? */
+    if n1 + lsn -1 = slength (as1) then return (as1),
+    do (
+        n1 : sword (as1,so,n1+lsn),
+        if not n1 then return(),
+        as1 : ssubstfirst(sn,so,as1,sequal,n1,n1+lso),
+        if n1 + lsn -1 = slength(as1) then return()
+    ),
+    as1
+)$
+/* [wxMaxima: input   end   ] */
+
+
+
+/* Old versions of Maxima abort on loading files that end in a comment. */
+"Created with wxMaxima 22.04.0"$

@@ -181,6 +181,29 @@ my_coeff7(v,exps,poly) := block(
 /* [wxMaxima: input   end   ] */
 
 
+/* [wxMaxima: input   start ] */
+/* Date: Sat Jan 15 20:23:32 WET 2005 */
+/* Contributor: Boris Gaertner */
+/* Description: Collects all the terms of a polynomial w.r.t. a variable */
+rewriteAsPolynomialIn (p, t) :=block(
+    [expanded, degreeInT, result],
+    expanded : expand(p),
+    degreeInT: hipow(expanded, t),
+    result : 0,
+    for idx : 0 thru degreeInT do result : result + t^idx*ratcoeff(expanded, t, idx),
+    result
+);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Sun Jan 16 18:46:52 WET 2005 */
+/* Contributor: Stavros Macrakis */
+/* Description: Collects all the terms of a polynomial w.r.t. a variable */
+polyform(expr,var):= ev(ratdisrep(rat(isolate(expr,var),var)),eval);
+/* [wxMaxima: input   end   ] */
+
+
 
 /* Old versions of Maxima abort on loading files that end in a comment. */
 "Created with wxMaxima 22.04.0"$

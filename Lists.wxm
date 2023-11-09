@@ -9,6 +9,46 @@ nth(l, n) := if n < length(l) then first(rest(l, n-1)) else last(l);
 
 
 /* [wxMaxima: input   start ] */
+/* Date: Wed May 19 21:12:31 WEST 2010 */
+/* Contributor: Piotr Słomski */
+/* Description: Intended implementation of Mathematica tuples */
+Tuples(S, N):=block(
+    K:length(S),
+    counter:create_list(1, i, 1, N),
+    res:[create_list(S[counter[i]],i,1,N)],
+    for i:1 thru K^N-1 do (
+        counter[1]:counter[1]+1,
+        for j:1 thru N-1 do (
+            if counter[j]>K then (
+                counter[j]:1,
+                counter[j+1]:counter[j+1]+1
+            ) else (
+                return
+            )
+        ),
+        res:append(res, [create_list(S[counter[i]],i,1,N)])
+    ),
+    res
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Thu May 20 17:44:38 WEST 2010 */
+/* Contributor: Mario Rodriguez */
+/* Description: Intended implementation of Mathematica tuples */
+tuples(lis, n) :=block(
+    [ len_lis, aux_lis, aux_set, cart_prod],
+    len_lis : length(lis),
+    aux_lis : makelist(?gensym(),k,1,len_lis),
+    aux_set : setify(aux_lis),
+    cart_prod : apply(cartesian_product, makelist(aux_set,k,1,n)),
+    subst(map("=", aux_lis, lis), listify(cart_prod))
+) $
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
 /* Date: Fri Aug 4 17:06:41 WEST 2006 */
 /* Contributor: Richard Fateman */
 /* Description: Filters a list with respect to a predicate (as sublist does) */
