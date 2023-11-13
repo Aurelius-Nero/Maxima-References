@@ -9,6 +9,36 @@ nth(l, n) := if n < length(l) then first(rest(l, n-1)) else last(l);
 
 
 /* [wxMaxima: input   start ] */
+/* Date: 2017-07-10 15:38:43 UTC */
+/* Contributor: Stavros Macrakis */
+/* Description: returns a set with the duplicated elements of the list l */
+dups(l) :=block(
+    [res : []],
+    while l # [] do (
+        if member(first(l), rest(l)) then push(first(l), res),
+        l : rest(l)
+    ),
+    setify(res)
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: 2017-07-10 15:38:43 UTC */
+/* Contributor: Stavros Macrakis */
+/* Description: returns a list with the duplicated elements of the list l */
+dups(l) :=block(
+    [dups:[],counts],
+    local(counts),
+    counts[x]:=0,
+    for i in l do counts[i]: counts[i]+1,
+    for i in rest(arrayinfo(counts),2) do if counts[first(i)]>1 then push(first(i),dups),
+    dups
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
 /* Date: Wed May 19 21:12:31 WEST 2010 */
 /* Contributor: Piotr Słomski */
 /* Description: Intended implementation of Mathematica tuples */

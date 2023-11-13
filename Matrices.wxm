@@ -199,6 +199,30 @@ removecol(m,c):=transpose(removerow(transpose(m),c))$
 
 
 /* [wxMaxima: input   start ] */
+$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Thu Apr 7 12:31:22 WEST 2005 */
+/* Contributor: Stavros Macrakis */
+/* Description: Returns a row vector with the same number of entries */
+flatten_matrix(m):=matrix(apply(append, args(transpose(m))))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Tue May 13 15:28:50 WEST 2008 */
+/* Contributor: Stavros Macrakis */
+/* Description: Returns a matrix with the same number of entries but different size (numbers of rows and columns) */
+resize_matrix(m,rows,cols) :=block(
+    [list: xreduce(append,args(m))],
+    genmatrix( lambda([i,j],list[j+(i-1)*cols]), rows, cols)
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
 /* Date: Sat Dec 21 06:35:10 WET 2013 */
 /* Contributor: Mike Valenzuela */
 /* Description: Tries to return the power of a matrix */

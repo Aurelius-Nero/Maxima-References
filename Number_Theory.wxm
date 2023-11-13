@@ -129,6 +129,43 @@ disp(dFloat)$
 
 
 /* [wxMaxima: input   start ] */
+/* Date: Mon Apr 5 18:13:36 WEST 2010 */
+/* Contributor: Luigi Marino */
+/* Description: returns the n-th prime number */
+primo(n):=block(
+    if n=1 then return(2) else (
+        p:1,
+        k:1
+    ),
+    while k#n do (
+        p:p+2,
+        d:2,
+        while (d*d<=p and mod(p ,d)#0) do (
+            d:d+1
+        ),
+        if d*d>p then k:k+1
+    ),
+    return(p)
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Sun Apr 11 18:39:07 WEST 2010 */
+/* Contributor: Jaime Villate */
+/* Description: returns the n-th prime number */
+primo2(n) := block(
+    [i : n, p : 2],
+    while i > 1 do (
+        i : i - 1,
+        p : next_prime(p)
+    ),
+    return(p)
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
 /* Date: Mon Jun 14 22:06:34 WEST 2010 */
 /* Contributor: Eric Reyssat */
 /* Description: Farey sequence */
