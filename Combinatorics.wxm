@@ -39,6 +39,51 @@ SignaturePermutation(inp) := block(
 /* [wxMaxima: input   end   ] */
 
 
+/* [wxMaxima: input   start ] */
+/* Date: Fri Jan 11 18:05:18 WET 2002 */
+/* Contributor: Martin Rubey */
+/* Description: Returns a pair of Semi-standard-Young tableaux associated via the
+Burge-correspondence with the permutation given */
+
+/* Position(element,list,test:e,f->[T,F]) gives the first index i such that
+   test(e,l[i]) is true, otherwise Length(l)+1 */
+Position(e, l, test) := block([len], len:length(l)+1,
+                                     for i:1 thru len
+                                     do if i=len or apply(test, [e,l[i]])
+                                        then return(i))$
+Insertaux(e,t,c,l):=
+    if c=l
+    then [endcons([e],t),l]
+    else block([p],p:Position(e,t[c],lambda([e,f],e<=f)),
+		   if p=length(t[c])+1
+                   then [substinpart(endcons(e,t[c]),t,c),c]
+                   else Insertaux(t[c][p],substinpart(e,t,c,p),c+1,l))$
+/* Insert performs column bumping as follows:
+   Let c=1
+   While c<=Length(t) Do
+     If Last(t[c]) > e
+     then find the first entry e_new >= e in t[c]
+          replace e_new in t[c] by e
+          increase c by 1, let e=e_new
+     else append e to column c of t
+          stop
+   end while
+
+   Its return value is [new tableau, column where last bumping occurred]
+*/
+Insert(e,t) := Insertaux(e,t,1,length(t)+1)$
+Place(e,t,c):=if c=length(t)+1 then endcons([e],t)
+			       else substinpart(endcons(e,t[c]),t,c)$
+Burgeaux(TA1,TA2,t1,t2) :=
+  if length(TA1)=0
+    then [t1, t2]
+    else block([res],res:Insert(first(TA2),t1),
+	             Burgeaux(rest(TA1),rest(TA2),first(res),
+		              Place(first(TA1),t2,last(res))))$
+Burge(TA) := Burgeaux(TA[1],TA[2],[],[])$
+/* [wxMaxima: input   end   ] */
+
+
 
 /* Old versions of Maxima abort on loading files that end in a comment. */
 "Created with wxMaxima 22.04.0"$

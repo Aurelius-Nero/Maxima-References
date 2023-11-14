@@ -79,10 +79,22 @@ tuples(lis, n) :=block(
 
 
 /* [wxMaxima: input   start ] */
+/* Date: Wed Dec 11 03:57:16 WET 2002 */
+/* Contributor: Stavros Macrakis */
+/* Description: Filters a list with respect to a predicate (as sublist does) */
+filter(f,l):=if l=[] then [] 
+elseif f(first(l)) then cons(first(l),filter(f,rest(l))) 
+else filter(f,rest(l))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
 /* Date: Fri Aug 4 17:06:41 WEST 2006 */
 /* Contributor: Richard Fateman */
 /* Description: Filters a list with respect to a predicate (as sublist does) */
-filter(l,pred):= if (l=[]) then [] else if pred(first(l)) then cons(first(l),filter(rest(l),pred)) else filter(rest(l),pred)$
+filter(l,pred):= if (l=[]) then [] 
+else if pred(first(l)) then cons(first(l),filter(rest(l),pred)) 
+else filter(rest(l),pred)$
 /* [wxMaxima: input   end   ] */
 
 

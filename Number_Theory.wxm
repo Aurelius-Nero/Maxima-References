@@ -296,6 +296,123 @@ iratsubst(a,b,c,modulus):=(
 /* [wxMaxima: input   end   ] */
 
 
+/* [wxMaxima: input   start ] */
+/* Date: Tue Sep 24 12:11:03 WEST 2002 */
+/* Contributor: Martin Rubey */
+/* Description: Guesses sequences of numbers */
+
+/* guess.mac -*- mode: Maxima; -*- 
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *									 *
+ * Copyright (C) 2002 Martin Rubey <Martin.Rubey at LaBRI.fr>               *
+ *									 *
+ * This file is part of GNU Maxima.					 *
+ *									 *
+ * This program is free software; you can redistribute it and/or	 *
+ * modify it under the terms of the GNU General Public License as	 *
+ * published by the Free Software Foundation; either version 2 of	 *
+ * the License, or (at your option) any later version.			 *
+ *									 *
+ * This program is distributed in the hope that it will be		 *
+ * useful, but WITHOUT ANY WARRANTY; without even the implied		 *
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR		 *
+ * PURPOSE. See the GNU General Public License for more details.	 *
+ *									 *
+ * History:								 *
+ * This is a translation of the Mathematica package Rate.m		 *
+ * by Christian Krattenthaler <Kratt at pap.univie.ac.at>.			 *
+ * The translation to Maple was done by Jean-Francois Beraud		 *
+ * <Jean-Francois.Beraud at sic.sp2mi.univ-poitiers.fr> and Bruno Gauthier	 *
+ * <Bruno.Gauthier at univ-mlv.fr>						 *
+ *									 *
+ * All features of this package are due to C. Krattenthaler      	 *
+ * The help text is due to Jean-Francois Beraud and Bruno Gauthier	 *
+ *									 *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ */
+
+/* Product of two lists */
+listprod(l1, l2) := map(lambda([a, b], a*b), l1, l2)$
+
+/* Opposite of a list */
+listminus(l) := map(lambda([a], -a), l)$
+
+/*
+ * Rational Interpolation
+ * Gives the rational interpolant to f (a function), 
+ * where m and k are respectively 
+ * the degrees of the numerator and denominator, 
+ * and xlist is a list of m+k+1 abscissas of the
+ * interpolation points
+ */
+rationalinterpolation(f, x, m, k, xlist) :=block(
+    [fx : map(f, xlist),varlist : makelist('x[i], i, 1, m+k+2),tempvec, mat],
+    /* tempvec contains the new column of mat */
+    tempvec : makelist(1, i, 1, m+k+1),
+    /* mat is the matrix that describes the interpolation problem */
+    mat : zeromatrix(m+k+2, m+k+1),
+    mat[1] : copylist(tempvec),
+    mat[m+2] : listminus(fx),
+    for i : 1 thru max(m, k) do (
+        tempvec : listprod(tempvec, xlist),
+        if i <= m then mat[i+1] : copylist(tempvec),
+        if i <= k then mat[i+m+2] : listminus(listprod(tempvec, fx))
+    ),
+    mat : ev(transpose(mat) . varlist, SCALARMATRIXP : false),
+    /* not sure whether it is save to modify xlist... */
+    xlist : linsolve(makelist(mat[i, 1], i, 1, m+k+1), varlist),
+    if length(xlist) = 0 /* something went wrong */ then NULL 
+    /* use the solution to define the interpolating rational function */
+    else factor(subst(xlist, sum('x[i+1]*x^i, i, 0, m)/sum('x[i+m+2]*x^i, i, 0, k)))
+)$
+/* Intermediate function */
+guesscons(l, t) :=block(
+    [res : [], x, f],
+    local(func, ri),
+    map(lambda([x, y], f[x] : y), makelist(i, i, 1, length(l)), l),
+    func(x) := f[x],
+    for i : 0 thru length(l)-2 do (
+        define(ri(x), rationalinterpolation(''func, x, length(l)-i-2, i,makelist(k, k, 1,length(l)-1))),
+        if ri(x) # NULL then if (subst(x=length(l), denom(ri(x))) # 0) and (subst(x=length(l), ri(x))-func(length(l)) = 0) and not member(ri(t), res) then res : cons(ri(t), res)
+    ),
+    res
+)$
+
+/*
+ * Main function of the package
+ * it tries to find a closed form  for a sequence 
+ * within the hierarchy of expressions of the 
+ * form <rational function>, <product of rational functions>, 
+ * <product of product of rational functions>, etc. It may 
+ * give several answers
+ */
+guess(l, [optargs]) :=block(
+    [lsize, maxlevel, maxlevellist, res, v, flag, unev],
+    local(g),
+    lsize : length(l),
+    onep : member("one", optargs),
+    optargs : delete("one", optargs, 1),
+    unevp : member("nogamma", optargs),
+    optargs : delete("nogamma", optargs, 1),
+    maxlevellist : sublist(optargs, numberp),
+    if length(maxlevellist) > 1 or length(optargs)-length(maxlevellist)>0 then 
+    error("Wrong number of optional arguments: ", optargs) else maxlevel : apply(min, cons(lsize-1, maxlevellist)) - 1,
+    array(g, maxlevel),
+    for k : 0 thru maxlevel do (
+        g[k] : l,
+        l : makelist(l[i+1]/l[i], i, 1, lsize-k-1)
+    ),
+    res : [],
+    for k : 0 thru maxlevel do if (l : guesscons(g[k], concat('i, k))) # [] then (
+        for i : 1 thru k do if unevp then l : makelist(g[k-i][1] *subst(j = concat('i, k-i+1),'product(l[v],j, 1, concat('i, k-i)-1)),v, 1, length(l)) else 
+        l : makelist(g[k-i][1] *subst(j = concat('i, k-i+1),product(l[v],j, 1, concat('i, k-i)-1)),v, 1, length(l)),
+        res : append(l, res),
+        if onep then return()
+    ),
+    res)$
+/* [wxMaxima: input   end   ] */
+
+
 
 /* Old versions of Maxima abort on loading files that end in a comment. */
 "Created with wxMaxima 22.04.0"$
