@@ -14,6 +14,20 @@ bits(n) := block(
 
 
 /* [wxMaxima: input   start ] */
+/* Date: Thu Jul 21 19:51:07 WEST 2005 */
+/* Contributor: Barton Willis */
+/* Description: returns a list with first n digits of a nonnegative integer */
+/* Note: it is needed mod instead of nummod */
+digitlist_helper(n,acc) := block([p],
+    if n < 10 then cons(n,acc) else (
+      p : nummod(n,10),
+      digitlist_helper(floor((n-p)/10), cons(p,acc))));
+digitlist(n) := if integerp(n) and n > -1 then digitlist_helper(n,[]) else
+    error("Input to 'digitlist' must be a nonnegative integer");
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
 /* Date: 2016-09-21 19:35 GMT+02:00 */
 /* Contributor: Stavros Macrakis */
 /* Description: Transform a float to rational */

@@ -166,6 +166,29 @@ primo2(n) := block(
 
 
 /* [wxMaxima: input   start ] */
+/* Date: Tue Dec 2 00:58:17 WET 2003 */
+/* Contributor: Stavros Macrakis */
+/* Description: counts the number of prime factors of n */
+inargs(q):=block(
+    [inflag:true],
+    args(q)
+)$
+inop(q):=block(
+    [inflag:true],
+    op(q)
+)$
+countprimefactors(n):=block(
+    [factored],
+    n: abs(n),
+    if not ratnump(n) then error("Rationals only"),
+    if n=0 or n=1 then return(0),
+    factored: factor(n),
+    if atom(factored) or inop(factored)="^" then 1 else length(inargs(factored))
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
 /* Date: Mon Jun 14 22:06:34 WEST 2010 */
 /* Contributor: Eric Reyssat */
 /* Description: Farey sequence */
@@ -292,6 +315,42 @@ iratsubst(a,b,c,modulus):=(
     a:rat(a),b:rat(b),c:rat(c),
     while (c # (c:ratsubst(a,b,c))) do 1,
     c
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Wed Dec 8 16:40:58 WET 2004 */
+/* Contributor: Barton Willis */
+/* Description: interpolates terms of a sequence given limits */
+infix("..")$
+".."(m,n) := block(
+    [s : []],
+    if integerp(m) and integerp(n) then if (m < n) then for k : m thru n do s : endcons(k,s) 
+    else []
+    else  s : funmake("..",[m,n]),
+    s
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Fri Aug 29 13:51:50 WEST 2003 */
+/* Contributor: Andrei Zorine */
+/* Description: interpolates terms of a sequence given limits and step */
+/* Note: the first parameter have the form by(lower limit,step) */
+to(x,y):=block(
+    [inc:0,dif:0,x:x, y:y,i1],
+    if atom(x) then (
+        inc:1,
+        dif:y-x
+    ) else if length(x)=2 and part(x,0)=by then (
+        inc:part(x,2),
+        dif:y-part(x,1),
+        x:part(x,1)
+    ) else return(0),
+    print([x,inc,dif,y]),
+    makelist(x+inc*i1,i1,0,dif/inc)
 )$
 /* [wxMaxima: input   end   ] */
 

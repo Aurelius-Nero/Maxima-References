@@ -1,6 +1,85 @@
 /* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
 /* [ Created with wxMaxima version 22.04.0 ] */
 /* [wxMaxima: input   start ] */
+/* Date: Tue Oct 21 17:32:45 WEST 2003 */
+/* Contributor: Stavros Macrakis */
+/* Description: Computes the functional composition of the expressions in exlist
+   as functions in var, returning an expression in var. */
+compose_ex(exlist,var):=block(
+    [r:var],
+    for i in exlist do r: subst(i,var,r),
+    r
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date:Sat Apr 12 05:54:26 WEST 2003 */
+/* Contributor: Stavros Macrakis */
+/* Description: pulls out common factors */
+
+/* Pull out only specific factors, usually numeric or constant.
+   Note that gcd(sqrt(2),sqrt(6))=1, so don't expect to find
+   common factors inside radicals. -- perhaps fix this some day */
+
+pullout_specific(expr,%%part):=            /* %%part is fluid */
+   if not(atom(expr)) and inpart(expr,0)="+"
+     then block([comm:gcd_part(args(expr)),
+                 listarith:true],          /* For division by comm */
+                comm*apply("+",args(expr)/comm))
+   else expr$
+
+pullout(expr):=pullout_specific(expr,identity)$
+scan_pullout(expr):=scanmap('pullout,expr,bottomup)$
+
+pullout_num(expr):=pullout_specific(expr,numfactor)$
+scan_pullout_num(expr):=scanmap('pullout_num,expr,bottomup)$
+
+pullout_const(expr):=pullout_specific(expr,constfactor)$
+scan_pullout_const(expr):=scanmap('pullout_const,expr,bottomup)$
+
+/* Pulls out common factors in a sum.  Uses content.
+   Not recommended, because content is a CRE function
+   and thus expands everything.  Also, results depend on variable
+   ordering. */
+
+pullout_using_content(expr):=
+   if not(atom(expr)) and inpart(expr,0)="+"
+     then product(content(expr)[i],i,1,2)
+   else expr$
+scan_pullout_using_content(expr):=scanmap('pullout_using_content,expr,b=
+ottomup)$
+
+
+/* Utilities */
+
+/* Do not use elsewhere -- depends on fluid variable %%part */
+gcd_part(list):=
+   block([res:(%%part)(first(list))],
+     while (list:rest(list)) # [] and res # 1 do
+        res: gcd(res,(%%part)(first(list))),     /* Bound by =
+pullout_specific */
+	res)$
+
+/* The identity function */
+identity(x):=x$
+
+/* The constant factor of an expression, e.g.
+
+   constfactor(2*%pi*r) => 2*%pi
+
+*/
+
+constfactor(ex):=
+  if numberp(ex) or constantp(ex)
+    then ex
+  elseif not(atom(ex)) and inpart(ex,0)="*"
+    then apply("*",map(constfactor,args(ex)))
+  else 1$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
 /* Date: Wed, 6 Sep 2006 15:29:38 -0400 */
 /* Contributor: Stavros Macrakis */
 /* Description: Function like factorsum, but more general */
@@ -8,6 +87,393 @@ partition_factor(ex):=block(
     [s,op,inflag:true],
     if atom(ex) or op(ex) # "+" then set(set(ex)) else s: set_partitions(setify(args(ex))),
     map(lambda([q],xreduce("+",map(lambda([r],factor(xreduce("+",args(r)))),q))),s)
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Thu Jan 20 17:12:59 2005 */
+/* Contributor: Wolfgang Jenkner */
+/* Description: multiplies partial fractions */
+/* Note: Just a sketch.  Works only if p and q are of the right form */
+pfmult_by_distrib(p,q,x):=map(lambda([exp],partfrac(exp,x)),distrib(p*q))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Wed Mar 27 13:54:08 WET 2013 */
+/* Contributor: Stavros Macrakis */
+/* Description: collects denominator power */
+collect_denominator_powers(expr):=
+    if mapatom(expr) or inpart(expr,0)#"+" then expr else block(
+    [],
+    local(d),
+    d[i] := [],
+    for i in expr do if mapatom(denom(i)) or inpart(denom(i),0) # "^" then 
+    d[denom(i)] : cons(i,d[denom(i)])
+    else d[inpart(denom(i),1)] : cons(i,d[inpart(denom(i),1)]),
+    xreduce("+",makelist(factor(xreduce("+",j)),j,listarray(d)))
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Mon Jul 14 19:45:49 WEST 2003 */
+/* Contributor: Stavros Macrakis */
+/* Description: simplifies non-commutative operations */
+
+
+/* Factorization of non-commutative polynomials: the trivial cases */
+
+/* Though this package is really very simple-minded, it is
+   surprisingly useful.  For example, it can prove the
+   Sherman-Morrison-Woodbury identity without manual
+   intervention.  */
+
+/************  Demo *************
+
+simpledotfactor(a.b+a);
+
+			       a . (b + 1)
+
+simpledotfactor(a.b+b);
+
+			       (a + 1) . b
+
+simpledotfactor(a.b^^-1+a.b);
+
+			      <- 1>     <2>
+			 a . b      . (b    + 1)
+
+simpledotfactor(2*a.b^^-1 .a + a.b^^-2 .a + a^^2);
+
+			    <- 2>          <2>
+		       a . b      . (b + 1)    . a
+
+declare(p,scalar);
+simpledotfactor(p^2*(b . a^^(-2) . b)-b^^2);
+
+			 <- 2>
+		  - b . a      . (a - p) . (a + p) . b
+
+simpledotfactor( expand(  a . (b + a^^-1) . (a.b + 1)^^-1 ) );
+
+                                  1
+
+Proof of Sherman-Morrison-Woodbury identity.
+
+simpledotfactor ( a^^-1 - a^^-1 . u . ( 1 + vt . a^^-1 . u )^^-1 . vt . =
+a^^-1 );
+
+                                           <- 1>
+                               (u . vt + a)
+
+*************/
+
+
+/* Workaround for broken dot simplification */
+
+dotexpand(ex) := expand( ev( expand(ex), dotexptsimp:false ) );
+
+/* requires nset */
+
+simpledotfactor(ex):=
+  if atom(ex) or numberp(ex) then ex
+  elseif scalarp(ex) then factor(ex)
+  elseif inop(ex)="*" or inop(ex)="." then
+    map('simpledotfactor,ex)
+  elseif inop(ex)="^^" then
+    simpledotfactor(inarg1(ex))^^inarg2(ex)
+  elseif inop(ex)="+" then
+   (
+    if length(nsvars(ex))<=1 then
+       dotunivarfactor(ex)
+    else
+      block([list,left,lenleft,rlist,right,lenright,middle],
+
+            list:map(expandexpon,args(ex)),
+
+            left: leftassoc_reduce2(commonprefix,map(rest,list),[]),
+            lenleft: inlength(left),
+
+            rlist: makelist(rest(term,1+lenleft),term,list),
+
+            right: leftassoc_reduce2(commonsuffix,rlist,[]),
+            lenright: inlength(right),
+
+            middle: =
+funmake("+",map(lambda([oterm,mterm],first(oterm)*funmake(".",mterm)),
+                              =
+list,makelist(rest(term,-lenright),term,rlist))),
+
+            if (left # [] or right # []) and length(nsvars(middle))<=1 =
+then
+               middle: dotunivarfactor(middle),
+
+            /* Return left . middle . right */
+              funmake(".",left)
+            . middle
+            . funmake(".",right)
+      ))
+  else ex$
+
+dotunivarfactor(ex):=
+  block([dotscrules:true],  /* so simplification will convert sc.nsc =
+=> sc*nsc */
+    subst(["*"=".","^"="^^"],
+       factor(subst(["."="*","^^"="^"],ex))))$
+
+inop(ex):=block([inflag:true],op(ex))$
+inargs(ex):=block([inflag:true],args(ex))$
+inlength(ex):=block([inflag:true],length(ex))$
+infirst(ex):=block([inflag:true],first(ex))$
+inarg1(ex):=block([inflag:true],first(ex))$
+inarg2(ex):=block([inflag:true],second(ex))$
+inrest(ex):=block([inflag:true],rest(ex))$
+inrest_1(ex):=block([inflag:true],rest(ex,-1))$
+inlast(ex):=block([inflag:true],last(ex))$
+
+/* Which variables *could* be non-scalar */
+nsvars(ex):=
+   if symbolp(ex) and not scalarp(ex) then [ex]
+   elseif atom(ex) then []
+   else apply('union,map('nsvars,args(ex)))$
+  /* Don't need to setify since sets come either from singleton or from =
+union */
+
+commonprefix(a,b):=
+    (a: args(a), b:args(b),
+     if a=[] or b=[] or first(a)#first(b) then []
+       else cons(first(a),commonprefix(rest(a),rest(b))))$
+
+/* Not efficient, but... */
+commonsuffix(a,b):=reverse(commonprefix(reverse(a),reverse(b)))$
+
+/* Convert k*a.b^^2.c to [k,a,b,b,c], expanding numeric powers */
+expandexpon(ex) :=
+   if scalarp(ex) then [ex]
+   elseif atom(ex) then [1,ex]
+   elseif inop(ex)="*" then
+        mulexponform([inrest_1(ex)],expandexpon(inlast(ex)))
+       /* Non-scalars only belong in last of "*" */
+   elseif inop(ex)="."
+     then rightassoc_reduce(mulexponform,[1],map(expandexpon,args(ex)))
+   elseif inop(ex)="^^"
+     then (
+       if numberp(inarg2(ex)) then
+          block([base:expandexpon(inarg1(ex)),basesc,basensc],
+            basesc: first(base), basensc: rest(base),
+            if inarg2(ex)<0 then
+              basensc: reverse(map(lambda([q],q^^-1),basensc)),
+            cons(basesc^inarg2(ex),
+                 apply(append,makelist(basensc,i,1,abs(inarg2(ex))))))
+       else [1,ex] )
+   else [1,ex]$
+
+mulexponform(a,b):=
+   cons(first(a)*first(b),append(rest(a),rest(b)))$
+
+rightassoc_reduce(fn,ident,list):=
+   if list=[] then ident
+   else
+      (fn)(first(list),rightassoc_reduce(fn,ident,rest(list)))$
+
+leftassoc_reduce(fn,ident,list):=
+   if list=[] then ident
+   else
+     (fn)(leftassoc_reduce(fn,ident,inrest_1(list)),last(list))$
+
+/* Following version for functions without identities which
+   must always be called with two genuine arguments.
+*/
+
+/* return fn(l1,fn(l2,l3)); if partial result = zero, skip the rest */
+rightassoc_reduce2(fn,list,zero):=
+   block([acc],
+    if length(list)<2 then error("leftassoc_reduce2 requires 2+ =
+args",list),
+    list: reverse(list),
+    acc: first(list), list: rest(list),
+    while list # [] and acc # zero do
+      ( acc: (fn)(first(list),acc),
+        list: rest(list) ),
+    acc)$
+
+leftassoc_reduce2(fn,list,zero):=
+   block([acc],
+    if length(list)<2 then error("leftassoc_reduce2 requires 2+ =
+args",list),
+    acc: first(list), list: rest(list),
+    while list # [] and acc # zero do
+      ( acc: (fn)(acc, first(list)),
+        list: rest(list) ),
+    acc)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Fri Dec 5 19:24:48 WET 2003 */
+/* Contributor: Stavros Macrakis */
+/* Description: linear expansion functions */
+
+linear_functions: map('nounify,[integrate,diff,limit,sum])$
+
+declare(generic_linear,linear)$
+
+top_level_linear_expand(ex):=if atom(ex) then ex 
+else if not member(op(ex),linear_functions) then multthru(ex)                  /* Distribute * over + */
+else subst(op(ex),'generic_linear,apply('generic_linear,args(ex)))$
+expand_linear: [ sum,integrate,diff,limit]$
+
+fullexpand(expr):=block(
+    [
+        linear_versions,
+        oldexpr: false,
+        expand_linear: map(nounify,expand_linear),
+        /* Set flags to maximize expansion */
+        logexpand: 'all,
+        expop: maxposex,
+        expon: maxnegex,
+        /* The following are true by default, but may have been
+             set otherwise by the user. */
+        radexpand: true,
+        trigexpandtimes: true,
+        trigexpandplus: true
+    ],
+    linear_versions:
+    makelist( (
+            f: concat(f, "_linear"),
+            apply('declare,[f,[linear]]),
+            f
+        ),f, expand_linear),
+    to_linear: map("=",expand_linear,linear_versions),
+    from_linear: map("=",linear_versions,expand_linear),
+    while (expr # oldexpr) do (
+        oldexpr:expr,
+        expr: trigexpand(subst(to_linear,oldexpr)),
+        expr: subst(from_linear, expr),
+        expr: ev(expr,noeval) 
+    ),
+    expr
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Fri Aug 19 02:22:34 WEST 2005 */
+/* Contributor: Mario Rodriguez Riotorto */
+/* Description: tries to solve equation with two square roots */
+sqrtxp(expr,x):=block(
+    [z,w:false],
+    if not atom(expr) and op(expr) = "-" then expr: -expr,
+    if atom(expr) then return(false),
+    if op(expr) = "*" then z: args(expr) else z: [expr],
+    for t in z while not w do w: is(not atom(t) and op(t) = 'sqrt and not freeof(x,t)),
+    w
+)$
+isolve(eq,x):=block(
+    [original,lm,rm,change:true,sol,correct:[]],
+    original: eq,
+    /* if not an equation, construct it */
+    if not op(eq) = "=" then eq: eq=0,
+    while change do (
+      /* if there are no changes in this loop,        */
+      /* then the equation is ready for calling solve */
+        change: false,
+      /* expand the equation */
+        eq: factor(eq),
+        eq: expand(eq*denom(lhs(eq))*denom(rhs(eq))),
+      /* take left an right terms separately */
+        lm: lhs(eq),
+        rm: rhs(eq),
+      /* scan the left side: if a term has not the          */
+      /* unknown under sqrt, it is thrown to the right side */
+        if atom(lm) then eq: eq - lm else (
+            if op(lm) # "+" then lm: [lm],
+            for t in args(lm) do if not sqrtxp(t,x) then eq: eq - t else change: true
+        ),
+      /* now scan the right side: if a term has the unknown */
+      /* under sqrt, it is thrown to the left side          */
+      if not atom(rm) then (
+            if op(rm) # "+" then rm: [rm],
+            for t in args(rm) do if sqrtxp(t,x) then (
+                eq: eq - t,
+                change: true
+            )
+        ),
+      /* Now let's make ^2 */
+        eq: expand(eq^2)),
+   /* hopefully, the eq. is ready to be solved */
+    sol:solve(eq,x),
+   /* now, solutions must be checked against input equation */
+    for r in sol do if lhs(r)=x and freeof(x,rhs(r)) and is(expand(at(original,r))) then correct:append(correct,[r]),
+   /* The output is a list of two lists: 1st list is the  */
+   /* result obtained by solve, and the 2nd list contains */
+   /* those solutions which solve the original equation.  */
+   /* If you want a more simple output, substitute next   */
+   /* command by 'correct' and you'll get legal solutions */
+    [sol,correct]
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Fri Nov 28 17:03:19 WET 2003 */
+/* Contributor: Dan Stanger */
+/* Description: factorizes a quartic into quadratics */
+define_variable(qfactor_signs,[[-1,-1],[-1,1],[1,-1],[1,1]],list)$
+qfactor(quartic,var,[sfun]):=block(
+    [a0,a1,a2,a3,u,alpha,beta,gamma,delta,f1,f2],
+    if(length(sfun) > 0) then sfun:sfun[1] else sfun:ratsimp,
+    l:coeff(quartic,var^4),
+    quartic:expand(quartic/l),
+    a0:first(partition(quartic,var)),
+    a3:coeff(quartic,var,3),
+    a2:coeff(quartic,var,2),
+    a1:coeff(quartic,var,1),
+    u:qfactor_solve(var^3-a2*var^2+(a1*a3-4*a0)*var-(a1^2+a0*a3^2-4*a0*a2),var),
+    block(
+        [flag:false,res,u1],
+        for u1 in u do (
+            print("solving with root",u1),
+            alpha:a3/2,
+            beta:sqrt(a3^2/4+u1-a2),
+            gamma:u1/2,
+            delta:sqrt((u1/2)^2-a0),
+            for i in qfactor_signs do (
+                for j in qfactor_signs do (
+                    res:qfactor_prod(var,i,j,alpha,beta,gamma,delta,a0,a1,a2,a3,sfun),
+                    flag:first(res),
+                    if flag = true then (
+                        f1:res[2],
+                        f2:res[3],
+                        return(0)
+                    )
+                ),
+                if flag = true then return(0)
+            ),
+            if flag = true then return(0)
+        )
+    ),
+    l*f1*f2
+)$
+qfactor_prod(var,sign1,sign2,alpha,beta,gamma,delta,a0,a1,a2,a3,sfun):=block(
+    [p1,q1,p2,q2],
+    p1:alpha+sign1[1]*beta,
+    q1:gamma+sign1[2]*delta,
+    p2:alpha+sign2[1]*beta,
+    q2:gamma+sign2[2]*delta,
+    if apply(sfun,[(p1+p2)=a3]) and 
+    apply(sfun,[(p1*p2+q1+q2)=a2]) and 
+    apply(sfun,[(p1*q2+p2*q1)=a1]) and 
+    apply(sfun,[(q1*q2)=a0]) then [true,var^2+p1*var+q1,var^2 +p2*var+q2] 
+    else [false]
+)$
+qfactor_solve(cubic,var):=block(
+    [r],
+    r:[],
+    for i in map(rhs,solve(cubic,var)) do if freeof(%i,i) then push(i,r),
+    r
 )$
 /* [wxMaxima: input   end   ] */
 

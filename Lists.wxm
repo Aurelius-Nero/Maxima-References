@@ -9,6 +9,47 @@ nth(l, n) := if n < length(l) then first(rest(l, n-1)) else last(l);
 
 
 /* [wxMaxima: input   start ] */
+/* Date: Mon Feb 17 03:07:15 WET 2003 */
+/* Contributor: Stavros Macrakis */
+/* Description: applies for all */
+forall(func,list) := apply("and",map(func,list))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Sun Dec 7 18:31:31 WET 2003 */
+/* Contributor: Stavros Macrakis */
+/* Description: returns the n first terms of the list l */
+firstn(l,n):=rest(l,n-length(l))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Sun Dec 7 18:44:22 WET 2003 */
+/* Contributor: Richard Fateman */
+/* Description: returns the  terms of the list k between indices r+1 and s */
+listheader: ?car([])$
+f(k,r,s):=block(
+    [simp:off],
+    ?cons(listheader,?subseq(?cdr(k),r,s))
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Fri Dec 26 17:44:36 WET 2003 */
+/* Contributor: Stavros Macrakis */
+/* Description: copies a list */
+copyall(l):=if listp(l) then map('copyall,l) else l$
+copyallall(l):=block(
+    [inflag:true],   /* operate on internal forms */
+    if atom(l) or subvarp(l) then l 
+    else funmake(copyallall(part(l,0)),map('copyallall,args(l)))
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
 /* Date: 2017-07-10 15:38:43 UTC */
 /* Contributor: Stavros Macrakis */
 /* Description: returns a set with the duplicated elements of the list l */
@@ -89,6 +130,16 @@ else filter(f,rest(l))$
 
 
 /* [wxMaxima: input   start ] */
+/* Date: Tue Dec 9 21:52:46 WET 2003 */
+/* Contributor: Richard Fateman */
+/* Description: Filters a list with respect to a predicate (as sublist does) */
+selectif(pred,set):= if set=[] then set 
+else if pred(first(set)) then cons(first(set),selectif(pred,rest(set))) 
+else selectif(pred,rest(set))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
 /* Date: Fri Aug 4 17:06:41 WEST 2006 */
 /* Contributor: Richard Fateman */
 /* Description: Filters a list with respect to a predicate (as sublist does) */
@@ -139,6 +190,14 @@ takewhile1(x,p):=block(
     else temp1:temp,
     reverse(temp1)
 )$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Mon Aug 29 01:28:25 WEST 2005 */
+/* Contributor: Richard Fateman  */
+/* Description: it is similar to lreduce */
+dominate(fun,list,default):=if emptyp(list) then default else dominate(fun,rest(list),fun(first(list),default));
 /* [wxMaxima: input   end   ] */
 
 

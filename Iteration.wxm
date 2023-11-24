@@ -1,6 +1,14 @@
 /* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
 /* [ Created with wxMaxima version 22.04.0 ] */
 /* [wxMaxima: input   start ] */
+/* Date: Fri Jun 17 16:42:57 WEST 2005 */
+/* Contributor: Stavros Macrakis */
+/* Description: Iterates n times f over the initial point x */
+composen(f,n,x):=if n=0 then x else f(composen(f,n-1,x))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
 /* Date: Fri Jul 7 23:45:18 WEST 2006 */
 /* Contributor: Raindrop */
 /* Description: Iterates b times f over the initial point a */

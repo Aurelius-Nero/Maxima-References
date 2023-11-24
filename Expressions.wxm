@@ -1,0 +1,67 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 22.04.0 ] */
+/* [wxMaxima: input   start ] */
+/* Date: Fri Jul 9 19:31:51 WEST 2004 */
+/* Contributor: Barton Willis */
+/* Description: generates names for variables */
+unk_index : -1$
+next_unk() := concat("a", unk_index : unk_index + 1)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Sat Jan 10 14:37:41 WET 2004 */
+/* Contributor: Alexander Vidybida */
+/* Description: reverses arguments of expression */
+prefix(IR)$
+IR expr:= funmake(op(expr),reverse(args(expr)))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Tue Apr 1 16:58:52 WEST 2003 */
+/* Contributor: Stavros Macrakis */
+/* Description: returns arguments of functions inside expression */
+/* Note: the two must be used with different names */
+funcargs(expr,funcs):=
+  if atom(expr) or constantp(expr)
+     then []
+  else
+  if member(part(expr,0),funcs)
+     then [expr]
+  else
+     apply(append,
+           makelist(funcargs(subexpr,funcs),subexpr,args(expr)))$
+
+funcargs(expr,funcs):=
+  if atom(expr) or numberp(expr)
+    then []
+  else append(if member(part(expr,0),funcs)
+                 then [expr]
+                 else [],
+              apply(append,
+                    makelist(funcargs(subexpr,funcs),
+                             subexpr,
+                             args(expr) ) ) )$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Thu Nov 24 01:14:41 WET 2005 */
+/* Contributor: Robert Dodier */
+/* Description: an example of using optimize */
+optimprefix : '_ $   /* default is %, which isn't OK for python variables */
+
+fortran_optimize (e) := block ([o : optimize (e)],
+  if atom (o) or op (o) # 'block then fortran (e)
+  else block ([a : args (o)],
+    for x in rest(a) do
+      if atom (x) then print ("Hey, whence this atom", x, "??")
+      else if op (x )= ":" then fortran (apply ("=", args(x)))
+      else fortran (apply ("=", ['RESULT, x]))))$
+/* [wxMaxima: input   end   ] */
+
+
+
+/* Old versions of Maxima abort on loading files that end in a comment. */
+"Created with wxMaxima 22.04.0"$

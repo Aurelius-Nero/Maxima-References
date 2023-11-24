@@ -1,9 +1,18 @@
 /* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
 /* [ Created with wxMaxima version 22.04.0 ] */
 /* [wxMaxima: input   start ] */
+/* Date: Sat Dec 18 23:13:31 WET 2004 */
+/* Contributor: Viktor T. Toth */
+/* Description: returns a list of the terms of a (univariate) polynomial*/
+pargs(x):=if atom(x) or length(x)=0 or op(x)#"+" then x else args(x);
+pargs(x):=if atom(x) or length(x)=0 or op(x)#"+" then x else substpart("[",x,0);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
 /* Date: Sat Apr 14 05:04:30 WEST 2001 */
 /* Contributor: Richard Fateman */
-/* Description: Function that returns the exponents of the dependent terms of a (univariate) polynomial*/
+/* Description: Function that returns the exponents of the dependent terms of a (univariate) polynomial */
 mypowers(r,x):=block(
     [ h:hipow(r,x)],
     if h=0 then [] else cons (h, mypowers(second(bothcoeff(r,x^h)),x))

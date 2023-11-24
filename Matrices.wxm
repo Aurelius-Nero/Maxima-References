@@ -22,6 +22,14 @@ ListMatrixEntries (M):=  apply (append, substinpart("[",M,0))$
 
 
 /* [wxMaxima: input   start ] */
+/* Date: Thu Feb 27 22:26:40 WET 2003 */
+/* Contributor: Barton Willis  */
+/* Description: returns the size of a matrix */
+size(m) := if matrixp(m) then [length(m),length(first(m))] else false$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
 /* Date: Fri Mar 23 14:58:27 WET 2007 */
 /* Contributor: Jaime E. Villate */
 /* Description: Implementation of cross product */
@@ -276,6 +284,31 @@ matrix_power(A, t):=block(
     /* Substitute the resulting equations into eq0 */
     return( rhs(at(eqs[1], solvedeq ) ) )
 )$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Sat Aug 28 20:42:56 WEST 2004 */
+/* Contributor: Larry Prevett */
+/* Description: an implementation of Kronecker product */
+/* Note: it is better to use block (that is suggested by the parser) */
+directprod(a,b):=(
+    [p],
+    if not (matrixp(a) and matrixp(b)) then error("Invalid arguments to directprod()") 
+    else (
+        p:zeromatrix(length(a)*length(b),length(a[1])*length(b[1])),
+        for i thru length(a) do for j thru length(a[1]) do for k thru length(b) do for l thru length(b[1]) do p[k+length(b)*(i-1),l+length(b[1])*(j-1) ]:a[i,j]*b[k,l],
+        p
+    )
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Tue Jul 13 20:30:58 WEST 2004 */
+/* Contributor: Barton Willis */
+/* Description: an implementation of random matrix */
+randommatrix(n) := apply(matrix,makelist(makelist(?random(100),k,1,n),j,1,n))$
 /* [wxMaxima: input   end   ] */
 
 
