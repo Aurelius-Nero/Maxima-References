@@ -1,0 +1,218 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 22.04.0 ] */
+/* [wxMaxima: input   start ] */
+/* Date: Sat Dec 18 23:13:31 WET 2004 */
+/* Contributor: Viktor T. Toth */
+/* Description: returns a list of the terms of a (univariate) polynomial*/
+pargs(x):=if atom(x) or length(x)=0 or op(x)#"+" then x else args(x);
+pargs(x):=if atom(x) or length(x)=0 or op(x)#"+" then x else substpart("[",x,0);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Sat Apr 14 05:04:30 WEST 2001 */
+/* Contributor: Richard Fateman */
+/* Description: Function that returns the exponents of the dependent terms of a (univariate) polynomial */
+mypowers(r,x):=block(
+    [ h:hipow(r,x)],
+    if h=0 then [] else cons (h, mypowers(second(bothcoeff(r,x^h)),x))
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Tue Apr 16 22:40:26 WEST 2013 */
+/* Contributor: Stavros Macrakis */
+/* Description: Returns the coefficients of an univariate polynomial (in this form does not work; it is necessary to put p:rat(p,v) in the list of variables of the block) */
+coefs(p,v):=block(
+    [l:[]],
+    while p # 0 do (
+        l:cons(r:ratcoef(p,v,0),l),
+        p:(p-r)/v),
+    l
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Fri Apr 19 10:10:53 WEST 2013 */
+/* Contributor: Wilhelm Haager */
+/* Description: Lists the coefficients of a univariate polynomial n ascendin order 
+(for the usual order for polynomials put makelist(i,i,n,0,-1) instead of makelist(i,i,0,n) */
+coefficient_list(p,s) :=block(
+        [n:floor(hipow(p,s))],
+        p:expand(p),
+        map(lambda([u],coeff(p,s,u)),makelist(i,i,0,n))
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Thu Apr 24 18:28:49 WEST 2008 */
+/* Contributor: Andre Maute */
+/* Description: Tries to extract the coefficients of a multivariate polynomial */
+my_coeff(v,exps,poly) := block(
+    [c,k,l,h],
+    c : [],
+    for k : 1 thru length(exps) do block(
+        h : poly,
+        for l : 1 thru length(v) do block(
+            if exps[k][l] # 0 then block(
+                h : coeff(h,v[l],exps[k][l])
+            )
+        ),
+        for l : 1 thru length(v) do block(
+            h : subst(0,v[l],h)
+        ),
+        h : ratsimp(h),
+        c : append(c,[h])
+    ),
+    return(c)
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Thu Apr 24 20:16:34 WEST 2008 */
+/* Contributor: Andre Maute */
+/* Description: Tries to extract the coefficients of a multivariate polynomial */
+my_coeff2(v,exps,poly) := block(
+    [c,k,l,h,rpoly],
+    rpoly : rat(poly,v),
+    c : [],
+    for k : 1 thru length(exps) do block(
+        h : rpoly,
+        for l : 1 thru length(v) do block(
+            h : ratcoeff(h,v[l],exps[k][l])
+        ),
+        c : append(c,[h])
+    ),
+    return(c)
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Thu Apr 24 20:16:34 WEST 2008 */
+/* Contributor: Andre Maute */
+/* Description: Tries to extract the coefficients of a multivariate polynomial */
+my_coeff3(v,exps,poly) := block(
+    [c,k,l,h,rpoly],
+    rpoly : rat(poly,v),
+    c : [],
+    for k : 1 thru length(exps) do block(
+        h : rpoly,
+        for l : 1 thru length(v) do block(
+            h : ratcoeff(h,v[length(v)+1-l],exps[k][length(v)+1-l])
+        ),
+        c : append(c,[h])
+    ),
+    return(c)
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Thu Apr 24 20:26:16 WEST 2008 */
+/* Contributor: Richard Fateman */
+/* Description: Tries to extract the coefficients of a multivariate polynomial */
+my_coeff4(v,exps,poly) := block(
+    [c:[],k,l,h,rpoly,lv:length(v)],
+    rpoly : rat(poly,v),
+    for k : 1 thru length(exps) do block(
+        h : rpoly,
+        for l : 1 thru length(v) do block(
+            h : ratcoeff(h,v[lv+1-l],exps[k][lv+1-l])
+        ),
+        c : cons(h,c)
+    ),
+    return(reverse(c))
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Thu Apr 24 20:30:43 WEST 2008 */
+/* Contributor: Richard Fateman */
+/* Description: Tries to extract the coefficients of a multivariate polynomial */
+my_coeff5(v,exps,poly) := block(
+    [c:[],k,l,h,rpoly,lv:length(v), ratvars:v], /*maybe should be ratvars:reverse[v] ?*/
+    rpoly : rat(poly),
+    for k : 1 thru length(exps) do block(
+        h : rpoly,
+        for l : 1 thru lv do block(
+            h : ratcoeff(h,v[lv+1-l],exps[k][lv+1-l])
+        ),
+        c : cons(h,c)
+    ),
+    return(reverse(c))
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Thu Apr 24 22:01:39 WEST 2008 */
+/* Contributor: Andre Maute */
+/* Description: Tries to extract the coefficients of a multivariate polynomial */
+my_coeff6(v,exps,poly) := block(
+    [c,k,l,h],
+    c : [],
+    for k : 1 thru length(exps) do block(
+        h : poly,
+        for l : 1 thru length(v) do block(
+            h : coeff(h,v[l],exps[k][l])
+        ),
+        h : ratsimp(h),
+        c : append(c,[h])
+    ),
+    return(c)
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Fri Apr 25 15:29:18 WEST 2008 */
+/* Contributor: Richard Fateman */
+/* Description: Tries to extract the coefficients of a multivariate polynomial */
+my_coeff7(v,exps,poly) := block(
+    [c:[],rpoly:rat(poly), ratvars:reverse(v)],
+    for k in exps do block(
+        [h:rpoly],
+        for L in v do block(
+            [e: k],
+            h : ratcoeff(h,L,first(e)),
+            e : rest(e)
+        ),
+        c : cons(h,c)
+    ),
+    return(reverse(c))
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Sat Jan 15 20:23:32 WET 2005 */
+/* Contributor: Boris Gaertner */
+/* Description: Collects all the terms of a polynomial w.r.t. a variable */
+rewriteAsPolynomialIn (p, t) :=block(
+    [expanded, degreeInT, result],
+    expanded : expand(p),
+    degreeInT: hipow(expanded, t),
+    result : 0,
+    for idx : 0 thru degreeInT do result : result + t^idx*ratcoeff(expanded, t, idx),
+    result
+);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Sun Jan 16 18:46:52 WET 2005 */
+/* Contributor: Stavros Macrakis */
+/* Description: Collects all the terms of a polynomial w.r.t. a variable */
+polyform(expr,var):= ev(ratdisrep(rat(isolate(expr,var),var)),eval);
+/* [wxMaxima: input   end   ] */
+
+
+
+/* Old versions of Maxima abort on loading files that end in a comment. */
+"Created with wxMaxima 22.04.0"$

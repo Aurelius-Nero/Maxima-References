@@ -1,0 +1,55 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 22.04.0 ] */
+/* [wxMaxima: input   start ] */
+/* Date: Wed Dec 6 20:51:58 WET 2006 */
+/* Contributor: Barton Willis */
+/* Description: Conversion to binary reversed (for the correct order replace cons instead of endcons) */
+bits(n) := block(
+    [l : []],
+    while n # 0 do (
+        l : endcons(mod(n, 2), l),
+        n : floor(n / 2)),
+    l)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Thu Jul 21 19:51:07 WEST 2005 */
+/* Contributor: Barton Willis */
+/* Description: returns a list with first n digits of a nonnegative integer */
+/* Note: it is needed mod instead of nummod */
+digitlist_helper(n,acc) := block([p],
+    if n < 10 then cons(n,acc) else (
+      p : nummod(n,10),
+      digitlist_helper(floor((n-p)/10), cons(p,acc))));
+digitlist(n) := if integerp(n) and n > -1 then digitlist_helper(n,[]) else
+    error("Input to 'digitlist' must be a nonnegative integer");
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: 2016-09-21 19:35 GMT+02:00 */
+/* Contributor: Stavros Macrakis */
+/* Description: Transform a float to rational */
+read_rationalizing_floats(prompt):=block(
+    [simp:false,ratprint:false, answer],
+    answer:read(prompt),
+    scanmap(lambda([ex],if floatnump(ex) or bfloatp(ex) then rat(ex) else ex),answer)
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Wed, Sep 21, 2016 at 1:39 PM */
+/* Contributor: David Scherfgen */
+/* Description: Transform a float to rational (it is presented as a macro, but that's not needed) */
+rationalize_numbers(expression) ::= block(
+    [ratprint : false,simp : false],
+    scanmap(lambda([e], if floatnump(e) or bfloatp(e) then ratdisrep(rat(e)) else e), expression)
+)$
+/* [wxMaxima: input   end   ] */
+
+
+
+/* Old versions of Maxima abort on loading files that end in a comment. */
+"Created with wxMaxima 22.04.0"$

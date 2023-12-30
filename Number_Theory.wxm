@@ -1,0 +1,477 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 22.04.0 ] */
+/* [wxMaxima: input   start ] */
+/* Date: Mon Jun 4 07:39:28 WEST 2001 */
+/* Contributor: William Schelter */
+/* Description: Implementation of extended euclidean algorithm */
+gcdex(f,g):=block(
+    [q0,q1,ok:true,lis1,lis2,lis3,q,tem,var:listofvars([f,g]),swap:false],
+    if (length(var) > 1) then merror("only univariate polynomials"),
+    var:var[1],
+    q0:divide(f,g),   /* divide(f,g) ==> [q:quotient(f,g),remainder:f-g*q] */
+	      /* if f/g is 0 then we reverse them */
+    if (q0[1]=0) then (
+        lis2:gcdex(g,f),
+        return([lis2[2],lis2[1],lis2[3]])
+    ),
+    if (q0[2]=0) then return([0,1,g]),
+    q1:divide(g,q0[2]),
+    lis1:[1,-q0[1],q0[2]],
+    if (q1[2]=0) then (
+        if numberp(lis1[3]) then lis1:lis1/lis1[3],
+        return(lis1)),
+      /* lisi are always perpendicular to [f,g,-1] */
+    lis2:[-q1[1],1+q0[1]*q1[1], q1[2]],
+    while (ok) do (
+        q:divide(lis1[3],lis2[3]),
+        lis3:ratsimp(lis1-lis2*q[1]),
+        tem:content(lis3[3],var)[1],
+        if (not(tem=0)) then lis3:ratsimp(lis3/tem),
+        if(lis3[3] = 0) then ok:false else (lis1:lis2, lis2:lis3)
+    ),
+    if numberp(lis2[3]) then lis2/lis2[3] else lis2
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Mon Jun 4 18:20:46 WEST 2001 */
+/* Contributor: Richard Fateman */
+/* Description: Implementation of extended euclidean algorithm */
+gcdex1(m,n,x):=
+/* Given 2 expressions m and n in x, we compute their
+GCD and two multipliers a and b such that a*m+b*n=d.
+Knuth vol 1 algorithm E */
+block(
+    [ap,b,bp,r:1,q],
+    [ap,b,a,bp,m,n]:[1,1,0,0,rat(m,x),rat(n,x)],
+    loop,
+    [q,r]:divide(m,n,x),
+    if(r=0) then   [a,b,n]/content(n,x)[1] else (
+        [m,n,t]:[n,r,ap],
+        [ap,a,t,bp]: [a,t-q*a,bp,b],
+        b:t-q*b,
+        go (loop)
+    )
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Thu Oct 17 21:51:40 WEST 2013 */
+/* Contributor: Adam Majewski */
+/* Description: Routine for repeating decimals (as it is this gives some warnings) */
+
+/* functions */
+
+/* give decimal digit D of the long division step */
+GiveD(leftover,divisor) := ceiling(float((10*leftover - divisor)/divisor))$
+
+/* Give leftover for next step of long division */
+GiveL(leftover,DecimalDigit,divisor) := 10*leftover - DecimalDigit*divisor$
+
+/* ratio in lowest terms
+   not working now
+*/
+GiveRatioType(ratio):=
+(
+   [numerator:num(ratio), FactorsList],
+   FactorsList:ifactors(numerator),
+   for f in FactorsList do if (first(first(f))!=2 and first(first(f))!=5)
+      then return("repeating decimal expansion")
+      else return("finite decimal expansion")
+)$
+
+compile(all)$
+
+/* input numbers*/
+a:19 $
+b:27 $
+
+/* automatic change to lowest terms */
+dRatio:a/b;
+/* GiveRatioType(dRatio); */
+a: num(dRatio);
+b: denom(dRatio);
+
+dFloat:0.0 $  /* quotient */
+k:0$ /* current position of decimal digit */
+LeftoverList:[]$ /* list of leftovers */
+
+/* Long Division of positive integers to Decimal Places ( without 
+remainder ) */
+
+/* first step */
+L:a$
+D:GiveD(L, b)$
+k:k-1$
+dFloat:dFloat +D*10^k$ /* save new digit to output float */
+LeftoverList:cons(L,LeftoverList)$
+disp(L,D)$
+
+/* nest steps */
+
+L:GiveL(L, D, b)$
+while (not member(L,LeftoverList))  /* test for the end of repeating 
+sequence */
+do
+  (
+   D:GiveD(L, b),
+   k:k-1,
+   dFloat:dFloat +D*10^k, /* save new digit to output float */
+   LeftoverList:cons(L,LeftoverList),
+   disp(L,D),
+   L:GiveL(L, D, b)
+  )$
+
+disp(dFloat)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Mon Apr 5 18:13:36 WEST 2010 */
+/* Contributor: Luigi Marino */
+/* Description: returns the n-th prime number */
+primo(n):=block(
+    if n=1 then return(2) else (
+        p:1,
+        k:1
+    ),
+    while k#n do (
+        p:p+2,
+        d:2,
+        while (d*d<=p and mod(p ,d)#0) do (
+            d:d+1
+        ),
+        if d*d>p then k:k+1
+    ),
+    return(p)
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Sun Apr 11 18:39:07 WEST 2010 */
+/* Contributor: Jaime Villate */
+/* Description: returns the n-th prime number */
+primo2(n) := block(
+    [i : n, p : 2],
+    while i > 1 do (
+        i : i - 1,
+        p : next_prime(p)
+    ),
+    return(p)
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Tue Dec 2 00:58:17 WET 2003 */
+/* Contributor: Stavros Macrakis */
+/* Description: counts the number of prime factors of n */
+inargs(q):=block(
+    [inflag:true],
+    args(q)
+)$
+inop(q):=block(
+    [inflag:true],
+    op(q)
+)$
+countprimefactors(n):=block(
+    [factored],
+    n: abs(n),
+    if not ratnump(n) then error("Rationals only"),
+    if n=0 or n=1 then return(0),
+    factored: factor(n),
+    if atom(factored) or inop(factored)="^" then 1 else length(inargs(factored))
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Mon Jun 14 22:06:34 WEST 2010 */
+/* Contributor: Eric Reyssat */
+/* Description: Farey sequence */
+fc2(n):=block(
+    L:[[0,1]],a:0,b:1,c:1,d:n,
+    while 2*c<d do (
+        k:floor ((b+n)/d),
+        e:k*c-a,
+        f:k*d-b,
+        a:c,
+        b:d,
+        c:e,
+        d:f, 
+        L:cons([a,b],L)
+    ),
+    append(reverse(L) , [[1,2]] , map(lambda([x],[x[2]-x[1],x[2]]),L))
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Mon Jun 14 22:22:14 WEST 2010 */
+/* Contributor: Starvros Macrakis */
+/* Description: Farey sequence */
+fc3(n):=block(L:[0],a:0,b:1,c:1,d:n,
+    while 2*c < d do (
+        k:floor((b+n)/d),
+        e:k*c-a,
+        f:k*d-b,
+        a:c,
+        b:d,
+        c:e,
+        d:f,
+        L:cons(a/b,L)
+    ),
+    append(reverse(L),[1/2],1-L)
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Tue Jun 15 03:22:16 WEST 2010 */
+/* Contributor: Barton Willis */
+/* Description: Farey sequence */
+h(n) := block(
+    [d,j,l : [[0],[1]]],
+    d : setify(makelist(i,i,floor(n/2),n)),
+    while not emptyp(d) do (
+        j : last(d),
+        d : setdifference(d, divisors(j)),
+        l : cons(makelist(i/j,i,1,j-1),l)
+    ),
+    setify(xreduce('append,l))
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Tue Jun 15 18:02:41 WEST 2010 */
+/* Contributor: Adam Majewski */
+/* Description: Farey sequence */
+F(n):=block(
+    [a],
+    a:[0/1,1/1],
+    if n>=2 then 
+    for denominator:2 thru n step 1 do 
+    for numerator:1 thru (denominator-1) step 1 do 
+    a:cons(numerator/denominator,a),
+    return(setify(a))
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Sun Jun 13 22:02:36 WEST 2010 */
+/* Contributor: Barton Willis */
+/* Description: Farey sequence */
+ff(n) := setify(xreduce('append, makelist(makelist(i/j,i,0,j), j,1, n)))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Mon Jun 14 07:46:18 WEST 2010 */
+/* Contributor: Eric Reyssat */
+/* Description: Farey sequence */
+ff2(n) := setify(xreduce('append, makelist(makelist(i/j,i,0,j), j,floor(n/2), n)))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Tue, 13 Jun 2006 19:38:53 +0200 */
+/* Contributor: Andrej Vodopivec */
+/* Description: Implementation of Fermat factorization */
+factor_fermat(n) := block(
+    [a, b],
+    a : isqrt(n),
+    b : a*a-n,
+    while isqrt(b)#sqrt(b) do (
+        a : a+1,
+        b : a*a-n
+    ),
+    return(a-isqrt(b))
+    )$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Sun Oct 17 23:29:22 WEST 2004 */
+/* Contributor: Stavros Macrakis */
+/* Description: A code for modular exponentiation */
+modexpt(a,b,modulus):=block(
+    [result],
+    result: ratdisrep( rat(a)^b ),
+    if result>=0 then result else result+modulus)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Mon Nov 21 16:32:15 WET 2011 */
+/* Contributor: Stavros Macrakis */
+/* Description: A code for polynomial reduction in finite fields */
+/* Note: Computations of this kind can be achieved using let, letsimp and obviously rat and modulus */
+iratsubst(a,b,c,modulus):=(
+    a:rat(a),b:rat(b),c:rat(c),
+    while (c # (c:ratsubst(a,b,c))) do 1,
+    c
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Wed Dec 8 16:40:58 WET 2004 */
+/* Contributor: Barton Willis */
+/* Description: interpolates terms of a sequence given limits */
+infix("..")$
+".."(m,n) := block(
+    [s : []],
+    if integerp(m) and integerp(n) then if (m < n) then for k : m thru n do s : endcons(k,s) 
+    else []
+    else  s : funmake("..",[m,n]),
+    s
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Fri Aug 29 13:51:50 WEST 2003 */
+/* Contributor: Andrei Zorine */
+/* Description: interpolates terms of a sequence given limits and step */
+/* Note: the first parameter have the form by(lower limit,step) */
+to(x,y):=block(
+    [inc:0,dif:0,x:x, y:y,i1],
+    if atom(x) then (
+        inc:1,
+        dif:y-x
+    ) else if length(x)=2 and part(x,0)=by then (
+        inc:part(x,2),
+        dif:y-part(x,1),
+        x:part(x,1)
+    ) else return(0),
+    print([x,inc,dif,y]),
+    makelist(x+inc*i1,i1,0,dif/inc)
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Tue Sep 24 12:11:03 WEST 2002 */
+/* Contributor: Martin Rubey */
+/* Description: Guesses sequences of numbers */
+
+/* guess.mac -*- mode: Maxima; -*- 
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *									 *
+ * Copyright (C) 2002 Martin Rubey <Martin.Rubey at LaBRI.fr>               *
+ *									 *
+ * This file is part of GNU Maxima.					 *
+ *									 *
+ * This program is free software; you can redistribute it and/or	 *
+ * modify it under the terms of the GNU General Public License as	 *
+ * published by the Free Software Foundation; either version 2 of	 *
+ * the License, or (at your option) any later version.			 *
+ *									 *
+ * This program is distributed in the hope that it will be		 *
+ * useful, but WITHOUT ANY WARRANTY; without even the implied		 *
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR		 *
+ * PURPOSE. See the GNU General Public License for more details.	 *
+ *									 *
+ * History:								 *
+ * This is a translation of the Mathematica package Rate.m		 *
+ * by Christian Krattenthaler <Kratt at pap.univie.ac.at>.			 *
+ * The translation to Maple was done by Jean-Francois Beraud		 *
+ * <Jean-Francois.Beraud at sic.sp2mi.univ-poitiers.fr> and Bruno Gauthier	 *
+ * <Bruno.Gauthier at univ-mlv.fr>						 *
+ *									 *
+ * All features of this package are due to C. Krattenthaler      	 *
+ * The help text is due to Jean-Francois Beraud and Bruno Gauthier	 *
+ *									 *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ */
+
+/* Product of two lists */
+listprod(l1, l2) := map(lambda([a, b], a*b), l1, l2)$
+
+/* Opposite of a list */
+listminus(l) := map(lambda([a], -a), l)$
+
+/*
+ * Rational Interpolation
+ * Gives the rational interpolant to f (a function), 
+ * where m and k are respectively 
+ * the degrees of the numerator and denominator, 
+ * and xlist is a list of m+k+1 abscissas of the
+ * interpolation points
+ */
+rationalinterpolation(f, x, m, k, xlist) :=block(
+    [fx : map(f, xlist),varlist : makelist('x[i], i, 1, m+k+2),tempvec, mat],
+    /* tempvec contains the new column of mat */
+    tempvec : makelist(1, i, 1, m+k+1),
+    /* mat is the matrix that describes the interpolation problem */
+    mat : zeromatrix(m+k+2, m+k+1),
+    mat[1] : copylist(tempvec),
+    mat[m+2] : listminus(fx),
+    for i : 1 thru max(m, k) do (
+        tempvec : listprod(tempvec, xlist),
+        if i <= m then mat[i+1] : copylist(tempvec),
+        if i <= k then mat[i+m+2] : listminus(listprod(tempvec, fx))
+    ),
+    mat : ev(transpose(mat) . varlist, SCALARMATRIXP : false),
+    /* not sure whether it is save to modify xlist... */
+    xlist : linsolve(makelist(mat[i, 1], i, 1, m+k+1), varlist),
+    if length(xlist) = 0 /* something went wrong */ then NULL 
+    /* use the solution to define the interpolating rational function */
+    else factor(subst(xlist, sum('x[i+1]*x^i, i, 0, m)/sum('x[i+m+2]*x^i, i, 0, k)))
+)$
+/* Intermediate function */
+guesscons(l, t) :=block(
+    [res : [], x, f],
+    local(func, ri),
+    map(lambda([x, y], f[x] : y), makelist(i, i, 1, length(l)), l),
+    func(x) := f[x],
+    for i : 0 thru length(l)-2 do (
+        define(ri(x), rationalinterpolation(''func, x, length(l)-i-2, i,makelist(k, k, 1,length(l)-1))),
+        if ri(x) # NULL then if (subst(x=length(l), denom(ri(x))) # 0) and (subst(x=length(l), ri(x))-func(length(l)) = 0) and not member(ri(t), res) then res : cons(ri(t), res)
+    ),
+    res
+)$
+
+/*
+ * Main function of the package
+ * it tries to find a closed form  for a sequence 
+ * within the hierarchy of expressions of the 
+ * form <rational function>, <product of rational functions>, 
+ * <product of product of rational functions>, etc. It may 
+ * give several answers
+ */
+guess(l, [optargs]) :=block(
+    [lsize, maxlevel, maxlevellist, res, v, flag, unev],
+    local(g),
+    lsize : length(l),
+    onep : member("one", optargs),
+    optargs : delete("one", optargs, 1),
+    unevp : member("nogamma", optargs),
+    optargs : delete("nogamma", optargs, 1),
+    maxlevellist : sublist(optargs, numberp),
+    if length(maxlevellist) > 1 or length(optargs)-length(maxlevellist)>0 then 
+    error("Wrong number of optional arguments: ", optargs) else maxlevel : apply(min, cons(lsize-1, maxlevellist)) - 1,
+    array(g, maxlevel),
+    for k : 0 thru maxlevel do (
+        g[k] : l,
+        l : makelist(l[i+1]/l[i], i, 1, lsize-k-1)
+    ),
+    res : [],
+    for k : 0 thru maxlevel do if (l : guesscons(g[k], concat('i, k))) # [] then (
+        for i : 1 thru k do if unevp then l : makelist(g[k-i][1] *subst(j = concat('i, k-i+1),'product(l[v],j, 1, concat('i, k-i)-1)),v, 1, length(l)) else 
+        l : makelist(g[k-i][1] *subst(j = concat('i, k-i+1),product(l[v],j, 1, concat('i, k-i)-1)),v, 1, length(l)),
+        res : append(l, res),
+        if onep then return()
+    ),
+    res)$
+/* [wxMaxima: input   end   ] */
+
+
+
+/* Old versions of Maxima abort on loading files that end in a comment. */
+"Created with wxMaxima 22.04.0"$

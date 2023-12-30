@@ -1,0 +1,1087 @@
+From boris at plmsc.psu.edu  Mon Jun 12 17:52:06 2000
+From: boris at plmsc.psu.edu (Boris Veytsman)
+Date: 12 Jun 2000 12:52:06 -0400
+Subject: [Maxima] [sci.math.symbolic] Problem/Bug in Maxima?
+Message-ID: <200104140352.WAA32746@linux34.ma.utexas.edu>
+
+I've found this letter in smc newsgroup... Please CC: the responces to
+the author.
+-- 
+Good luck
+
+-Boris
+http://www.plmsc.psu.edu/~boris/
+
+------- Start of forwarded message -------
+From: David Ronis <ronis at gibbs.chem.mcgill.ca>
+Subject: Problem/Bug in Maxima?
+Newsgroups: sci.math.symbolic
+Message-ID: <2p715.78$_r3.43895 at carnaval.risq.qc.ca>
+Date: Mon, 12 Jun 2000 15:33:18 GMT
+
+I've encountered what I think are two bugs in maxima.  I need to do 
+iterated integrals of the form:
+
+f[n](x):=p[n](x)+ W(x) + integrate(f[n-1](s[n-1]),s[n-1],0,x);
+f[0](x):=0;
+
+where p[n](x) is a low-order polynomial (defined explicitly) and W(x)
+is an unknown function.  I've decleared integrate linear.
+
+Here's what happens (say for p[n](x):=x):
+
+(C1) f[n](x):=p[n](x)+ W(x) + integrate(f[n-1](s[n-1]),s[n-1],0,x);
+
+(D1)    f (x) := p (x) + W(x) + INTEGRATE(f     (s     ), s     , 0, x)
+	 n	  n			   n - 1  n - 1	   n - 1
+(C2) f[0](x):=0;
+
+(D2) 				  f (x) := 0
+				   0
+(C3) declare(integrate,linear);
+
+(D3) 				     DONE
+(C4) p[n](x):=x;
+
+(D4) 				  p (x) := x
+				   n
+(C5) f[1](x);
+
+(D5) 				   W(x) + x
+(C6) f[2](x);
+
+(D6) 			   W(x) + (W(s ) + s ) x + x
+				      1	    1
+
+If instead I try:
+
+(C1) declare(integrate,linear);
+
+(D1) 				     DONE
+(C2) p[n](x):=x;
+
+(D2) 				  p (x) := x
+				   n
+(C3) f[n](x):=p[n](x)+ W(x) + integrate(f[n-1](s),s,0,x);
+
+(D3) 	     f (x) := p (x) + W(x) + INTEGRATE(f     (s), s, 0, x)
+	      n	       n		        n - 1
+(C4) f[0](x):=0;
+
+(D4) 				  f (x) := 0
+				   0
+(C5) f[1](x);
+
+(D5) 				   W(x) + x
+(C6) f[2](x);
+
+Is  x  positive, negative, or zero?
+
+pos;
+				    x		 x
+				   /	        /
+				   [	        [
+(D6) 		        W(x) + x + I  W(s) ds + I  s ds
+				   ]	        ]
+				   /	        /
+				    0		 0
+(C7) f[3](x);
+
+Is  x  positive, negative, or zero?
+
+pos;
+		  x  s		     x  s	     x		  x
+		 /  /		    /  /	    /		 /
+		 [  [		    [  [	    [		 [
+(D7)  W(x) + x + I  I  W(s) ds ds + I  I  s ds ds + I  W(s) ds + I  s ds
+		 ]  ]		    ]  ]	    ]		 ]
+		 /  /		    /  /	    /		 /
+		  0  0		     0  0	     0		  0
+(C8) f[4](x);
+
+Is  x  positive, negative, or zero?
+
+pos;
+		 x  s  s		  x  s  s	        x  s
+		/  /  /			 /  /  /	       /  /
+		[  [  [			 [  [  [	       [  [
+(D8) W(x) + x + I  I  I	 W(s) ds ds ds + I  I  I  s ds ds ds + I  I  W(s) ds ds
+		]  ]  ]			 ]  ]  ]	       ]  ]
+		/  /  /			 /  /  /	       /  /
+		 0  0  0		  0  0  0	        0  0
+
+					    x  s	    x		 x
+					   /  /		   /	        /
+					   [  [		   [	        [
+					 + I  I	 s ds ds + I  W(s) ds + I  s ds
+					   ]  ]		   ]	        ]
+					   /  /		   /	        /
+
+Which is slightly better but still wrong.  My questions are:
+
+1.  Why doesn't maxima do the trivial integral of x?  
+
+2.  How do I get it to properly change the symbol used for the
+integration variable and limits in multiple integrals?
+
+David
+
+------- End of forwarded message -------
+
+
+
+From boris at plmsc.psu.edu  Mon Jun 12 17:52:06 2000
+From: boris at plmsc.psu.edu (Boris Veytsman)
+Date: 12 Jun 2000 12:52:06 -0400
+Subject: [Maxima] [sci.math.symbolic] Problem/Bug in Maxima?
+Message-ID: <200104140355.WAA00325@linux34.ma.utexas.edu>
+
+I've found this letter in smc newsgroup... Please CC: the responces to
+the author.
+-- 
+Good luck
+
+-Boris
+http://www.plmsc.psu.edu/~boris/
+
+------- Start of forwarded message -------
+From: David Ronis <ronis at gibbs.chem.mcgill.ca>
+Subject: Problem/Bug in Maxima?
+Newsgroups: sci.math.symbolic
+Message-ID: <2p715.78$_r3.43895 at carnaval.risq.qc.ca>
+Date: Mon, 12 Jun 2000 15:33:18 GMT
+
+I've encountered what I think are two bugs in maxima.  I need to do 
+iterated integrals of the form:
+
+f[n](x):=p[n](x)+ W(x) + integrate(f[n-1](s[n-1]),s[n-1],0,x);
+f[0](x):=0;
+
+where p[n](x) is a low-order polynomial (defined explicitly) and W(x)
+is an unknown function.  I've decleared integrate linear.
+
+Here's what happens (say for p[n](x):=x):
+
+(C1) f[n](x):=p[n](x)+ W(x) + integrate(f[n-1](s[n-1]),s[n-1],0,x);
+
+(D1)    f (x) := p (x) + W(x) + INTEGRATE(f     (s     ), s     , 0, x)
+	 n	  n			   n - 1  n - 1	   n - 1
+(C2) f[0](x):=0;
+
+(D2) 				  f (x) := 0
+				   0
+(C3) declare(integrate,linear);
+
+(D3) 				     DONE
+(C4) p[n](x):=x;
+
+(D4) 				  p (x) := x
+				   n
+(C5) f[1](x);
+
+(D5) 				   W(x) + x
+(C6) f[2](x);
+
+(D6) 			   W(x) + (W(s ) + s ) x + x
+				      1	    1
+
+If instead I try:
+
+(C1) declare(integrate,linear);
+
+(D1) 				     DONE
+(C2) p[n](x):=x;
+
+(D2) 				  p (x) := x
+				   n
+(C3) f[n](x):=p[n](x)+ W(x) + integrate(f[n-1](s),s,0,x);
+
+(D3) 	     f (x) := p (x) + W(x) + INTEGRATE(f     (s), s, 0, x)
+	      n	       n		        n - 1
+(C4) f[0](x):=0;
+
+(D4) 				  f (x) := 0
+				   0
+(C5) f[1](x);
+
+(D5) 				   W(x) + x
+(C6) f[2](x);
+
+Is  x  positive, negative, or zero?
+
+pos;
+				    x		 x
+				   /	        /
+				   [	        [
+(D6) 		        W(x) + x + I  W(s) ds + I  s ds
+				   ]	        ]
+				   /	        /
+				    0		 0
+(C7) f[3](x);
+
+Is  x  positive, negative, or zero?
+
+pos;
+		  x  s		     x  s	     x		  x
+		 /  /		    /  /	    /		 /
+		 [  [		    [  [	    [		 [
+(D7)  W(x) + x + I  I  W(s) ds ds + I  I  s ds ds + I  W(s) ds + I  s ds
+		 ]  ]		    ]  ]	    ]		 ]
+		 /  /		    /  /	    /		 /
+		  0  0		     0  0	     0		  0
+(C8) f[4](x);
+
+Is  x  positive, negative, or zero?
+
+pos;
+		 x  s  s		  x  s  s	        x  s
+		/  /  /			 /  /  /	       /  /
+		[  [  [			 [  [  [	       [  [
+(D8) W(x) + x + I  I  I	 W(s) ds ds ds + I  I  I  s ds ds ds + I  I  W(s) ds ds
+		]  ]  ]			 ]  ]  ]	       ]  ]
+		/  /  /			 /  /  /	       /  /
+		 0  0  0		  0  0  0	        0  0
+
+					    x  s	    x		 x
+					   /  /		   /	        /
+					   [  [		   [	        [
+					 + I  I	 s ds ds + I  W(s) ds + I  s ds
+					   ]  ]		   ]	        ]
+					   /  /		   /	        /
+
+Which is slightly better but still wrong.  My questions are:
+
+1.  Why doesn't maxima do the trivial integral of x?  
+
+2.  How do I get it to properly change the symbol used for the
+integration variable and limits in multiple integrals?
+
+David
+
+------- End of forwarded message -------
+
+
+
+From camm at enhanced.com  Fri Jun 16 16:49:29 2000
+From: camm at enhanced.com (Camm Maguire)
+Date: 16 Jun 2000 11:49:29 -0400
+Subject: [Maxima] libc/ldso dependency in shared-lib maxima?
+In-Reply-To: Boris Veytsman's message of "12 Jun 2000 12:52:06 -0400"
+Message-ID: <200104140356.WAA00340@linux34.ma.utexas.edu>
+
+Greetings!  I maintain the Debian package of maxima, which has
+recently been accepted for installation into the unstable tree.  I've
+included Dr. Schelter's patch enabling shared (not static) linking to
+the system C and math libraries.  With this patch, we've had a working
+package in incoming for some time now.  
+
+Meanwhile, I forgot about maxima for a bit, upgraded my machine to the
+slightly newer versions of the Debian system packages, and suddenly
+maxima segfaults.  Another Debian user sees the same thing and has
+filed a bug.  Rebuilding on my upgraded system restores functionality.
+Luckily, I can chase this down if I hurry, as I still have access to a
+pre-upgrade machine which can build maxima with debugging symbols.
+
+I would be greatly appreciative, though, if anyone had an insight as
+to where to look in advance.
+
+Take care,
+
+-- 
+Camm Maguire			     			camm at enhanced.com
+==========================================================================
+"The earth is but one country, and mankind its citizens."  --  Baha'u'llah
+
+
+
+From camm at enhanced.com  Fri Jun 16 16:49:29 2000
+From: camm at enhanced.com (Camm Maguire)
+Date: 16 Jun 2000 11:49:29 -0400
+Subject: [Maxima] libc/ldso dependency in shared-lib maxima?
+In-Reply-To: Boris Veytsman's message of "12 Jun 2000 12:52:06 -0400"
+Message-ID: <200104140357.WAA00361@linux34.ma.utexas.edu>
+
+Greetings!  I maintain the Debian package of maxima, which has
+recently been accepted for installation into the unstable tree.  I've
+included Dr. Schelter's patch enabling shared (not static) linking to
+the system C and math libraries.  With this patch, we've had a working
+package in incoming for some time now.  
+
+Meanwhile, I forgot about maxima for a bit, upgraded my machine to the
+slightly newer versions of the Debian system packages, and suddenly
+maxima segfaults.  Another Debian user sees the same thing and has
+filed a bug.  Rebuilding on my upgraded system restores functionality.
+Luckily, I can chase this down if I hurry, as I still have access to a
+pre-upgrade machine which can build maxima with debugging symbols.
+
+I would be greatly appreciative, though, if anyone had an insight as
+to where to look in advance.
+
+Take care,
+
+-- 
+Camm Maguire			     			camm at enhanced.com
+==========================================================================
+"The earth is but one country, and mankind its citizens."  --  Baha'u'llah
+
+
+
+From camm at enhanced.com  Fri Jun 16 16:49:29 2000
+From: camm at enhanced.com (Camm Maguire)
+Date: 16 Jun 2000 11:49:29 -0400
+Subject: [Maxima] libc/ldso dependency in shared-lib maxima?
+In-Reply-To: Boris Veytsman's message of "12 Jun 2000 12:52:06 -0400"
+Message-ID: <200104140358.WAA00384@linux34.ma.utexas.edu>
+
+Greetings!  I maintain the Debian package of maxima, which has
+recently been accepted for installation into the unstable tree.  I've
+included Dr. Schelter's patch enabling shared (not static) linking to
+the system C and math libraries.  With this patch, we've had a working
+package in incoming for some time now.  
+
+Meanwhile, I forgot about maxima for a bit, upgraded my machine to the
+slightly newer versions of the Debian system packages, and suddenly
+maxima segfaults.  Another Debian user sees the same thing and has
+filed a bug.  Rebuilding on my upgraded system restores functionality.
+Luckily, I can chase this down if I hurry, as I still have access to a
+pre-upgrade machine which can build maxima with debugging symbols.
+
+I would be greatly appreciative, though, if anyone had an insight as
+to where to look in advance.
+
+Take care,
+
+-- 
+Camm Maguire			     			camm at enhanced.com
+==========================================================================
+"The earth is but one country, and mankind its citizens."  --  Baha'u'llah
+
+
+
+From camm at enhanced.com  Mon Jun 19 17:39:36 2000
+From: camm at enhanced.com (Camm Maguire)
+Date: 19 Jun 2000 12:39:36 -0400
+Subject: [Maxima] Re: source level debugging
+In-Reply-To: Bill Schelter's message of "Sat, 10 Jun 2000 10:09:02 -0500"
+Message-ID: <200104140401.XAA00550@linux34.ma.utexas.edu>
+
+Greetings!  Sorry to catch up on this so late ...
+
+OK, I'll include this file in the next package.
+
+BTW, did anyone see my earlier post regarding shared libc dependencies
+and segfaults I sent on Friday or thereabouts?  I'd greatly appreciate
+any insights you may have.
+
+Take care,
+
+Bill Schelter <wfs at math.utexas.edu> writes:
+
+>    Where should I get the "dbl" command, or what is the (modern?)
+>    equivalent?  Can you give me any other hints?
+> 
+> This is part of the elisp files in the gcl distribution.
+> 
+> There is a file dbl.el
+> 
+> and in it is the command dbl
+> 
+> If you copy those files to your emacs/lisp  directory then it will be
+> there.
+> 
+> I think there are some directions in the dbl.el file.
+> 
+> 
+> 
+>  
+> 
+> 
+
+-- 
+Camm Maguire			     			camm at enhanced.com
+==========================================================================
+"The earth is but one country, and mankind its citizens."  --  Baha'u'llah
+
+
+
+From willisb at unk.edu  Thu Sep 14 14:25:18 2000
+From: willisb at unk.edu (willisb at unk.edu)
+Date: Thu, 14 Sep 2000 08:25:18 -0500
+Subject: [Maxima] stopex.mc and powers for maxima 5.4
+Message-ID: <200104140402.XAA00560@linux34.ma.utexas.edu>
+
+Hi,
+
+I'm looking for a maxima (version 5.4) powers function and
+a working version of stopex.  If anyone can point me to
+these files, I'd appreciate it.
+
+I'm working on porting three Macsyma 422 programs to maxima;
+a macsyma-to-mathml translator, a  second order linear DE
+solver, and a clone of Macsyma's specfun library (about
+a dozen orthogonal polynomials).  Once I get them working,
+I'll make them freely available.
+
+Porting "back in time" twenty years is interesting; mostly
+I've only had to add simple utility functions such as second,
+op, and floor. For string functions ($stringp, $getchar, etc), I've
+added a few one line lisp programs.  Once I spent days porting
+a C++ program from gcc 2.7x to gcc 2.9x; compared to that
+experience, porting Macsyma 422 to maxima 5.4 has so far been
+a breeze.
+
+Specifically:
+
+1) I'm looking for the maxima (version 5.4)  powers function;
+my share2 directory has a usage file for powers, but no source file.
+I can't find the file on maxima's cvs at the University of Texas either.
+If anyone can point me to the source code for powers, I'd appreciate it.
+
+2) Maxima's stopex code seems to be  broken;  stopex.mc
+won't even load.  It halts when executing
+
+EVAL_WHEN([BATCH,LOADFILE],
+       IF GET('GNAUTO,'DIAGEVAL_VERSION)=FALSE
+       THEN LOAD('[GNAUTO,FASL,DSK,DGVAL]))$
+
+Commenting out this line, allows maxima to load stopex.mc.
+But then maxima complains that it can't find the freeofl function.
+Rolling my own as
+
+freeofl(x,e) := block([ ],
+   not member(false, apply(append, [outermap(freeof, x, e)]))
+);
+
+allows expandwrt to run, but it generates rubbish:
+
+(c1) expandwrt(x*(x+1),x);
+
+(d1) [5x^2+4x(x+1)]
+
+Again, if anyone has a correctly working stopex.mc file, I'd
+appreciate it.
+
+Thanks,
+
+Barton Willis
+University of Nebraska at Kearney
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+From boris at plmsc.psu.edu  Mon Jun 12 17:52:06 2000
+From: boris at plmsc.psu.edu (Boris Veytsman)
+Date: 12 Jun 2000 12:52:06 -0400
+Subject: [Maxima] [sci.math.symbolic] Problem/Bug in Maxima?
+Message-ID: <200104140402.XAA00570@linux34.ma.utexas.edu>
+
+I've found this letter in smc newsgroup... Please CC: the responces to
+the author.
+-- 
+Good luck
+
+-Boris
+http://www.plmsc.psu.edu/~boris/
+
+------- Start of forwarded message -------
+From: David Ronis <ronis at gibbs.chem.mcgill.ca>
+Subject: Problem/Bug in Maxima?
+Newsgroups: sci.math.symbolic
+Message-ID: <2p715.78$_r3.43895 at carnaval.risq.qc.ca>
+Date: Mon, 12 Jun 2000 15:33:18 GMT
+
+I've encountered what I think are two bugs in maxima.  I need to do 
+iterated integrals of the form:
+
+f[n](x):=p[n](x)+ W(x) + integrate(f[n-1](s[n-1]),s[n-1],0,x);
+f[0](x):=0;
+
+where p[n](x) is a low-order polynomial (defined explicitly) and W(x)
+is an unknown function.  I've decleared integrate linear.
+
+Here's what happens (say for p[n](x):=x):
+
+(C1) f[n](x):=p[n](x)+ W(x) + integrate(f[n-1](s[n-1]),s[n-1],0,x);
+
+(D1)    f (x) := p (x) + W(x) + INTEGRATE(f     (s     ), s     , 0, x)
+	 n	  n			   n - 1  n - 1	   n - 1
+(C2) f[0](x):=0;
+
+(D2) 				  f (x) := 0
+				   0
+(C3) declare(integrate,linear);
+
+(D3) 				     DONE
+(C4) p[n](x):=x;
+
+(D4) 				  p (x) := x
+				   n
+(C5) f[1](x);
+
+(D5) 				   W(x) + x
+(C6) f[2](x);
+
+(D6) 			   W(x) + (W(s ) + s ) x + x
+				      1	    1
+
+If instead I try:
+
+(C1) declare(integrate,linear);
+
+(D1) 				     DONE
+(C2) p[n](x):=x;
+
+(D2) 				  p (x) := x
+				   n
+(C3) f[n](x):=p[n](x)+ W(x) + integrate(f[n-1](s),s,0,x);
+
+(D3) 	     f (x) := p (x) + W(x) + INTEGRATE(f     (s), s, 0, x)
+	      n	       n		        n - 1
+(C4) f[0](x):=0;
+
+(D4) 				  f (x) := 0
+				   0
+(C5) f[1](x);
+
+(D5) 				   W(x) + x
+(C6) f[2](x);
+
+Is  x  positive, negative, or zero?
+
+pos;
+				    x		 x
+				   /	        /
+				   [	        [
+(D6) 		        W(x) + x + I  W(s) ds + I  s ds
+				   ]	        ]
+				   /	        /
+				    0		 0
+(C7) f[3](x);
+
+Is  x  positive, negative, or zero?
+
+pos;
+		  x  s		     x  s	     x		  x
+		 /  /		    /  /	    /		 /
+		 [  [		    [  [	    [		 [
+(D7)  W(x) + x + I  I  W(s) ds ds + I  I  s ds ds + I  W(s) ds + I  s ds
+		 ]  ]		    ]  ]	    ]		 ]
+		 /  /		    /  /	    /		 /
+		  0  0		     0  0	     0		  0
+(C8) f[4](x);
+
+Is  x  positive, negative, or zero?
+
+pos;
+		 x  s  s		  x  s  s	        x  s
+		/  /  /			 /  /  /	       /  /
+		[  [  [			 [  [  [	       [  [
+(D8) W(x) + x + I  I  I	 W(s) ds ds ds + I  I  I  s ds ds ds + I  I  W(s) ds ds
+		]  ]  ]			 ]  ]  ]	       ]  ]
+		/  /  /			 /  /  /	       /  /
+		 0  0  0		  0  0  0	        0  0
+
+					    x  s	    x		 x
+					   /  /		   /	        /
+					   [  [		   [	        [
+					 + I  I	 s ds ds + I  W(s) ds + I  s ds
+					   ]  ]		   ]	        ]
+					   /  /		   /	        /
+
+Which is slightly better but still wrong.  My questions are:
+
+1.  Why doesn't maxima do the trivial integral of x?  
+
+2.  How do I get it to properly change the symbol used for the
+integration variable and limits in multiple integrals?
+
+David
+
+------- End of forwarded message -------
+
+
+
+From camm at enhanced.com  Fri Jun 16 16:49:29 2000
+From: camm at enhanced.com (Camm Maguire)
+Date: 16 Jun 2000 11:49:29 -0400
+Subject: [Maxima] libc/ldso dependency in shared-lib maxima?
+In-Reply-To: Boris Veytsman's message of "12 Jun 2000 12:52:06 -0400"
+Message-ID: <200104140403.XAA00577@linux34.ma.utexas.edu>
+
+Greetings!  I maintain the Debian package of maxima, which has
+recently been accepted for installation into the unstable tree.  I've
+included Dr. Schelter's patch enabling shared (not static) linking to
+the system C and math libraries.  With this patch, we've had a working
+package in incoming for some time now.  
+
+Meanwhile, I forgot about maxima for a bit, upgraded my machine to the
+slightly newer versions of the Debian system packages, and suddenly
+maxima segfaults.  Another Debian user sees the same thing and has
+filed a bug.  Rebuilding on my upgraded system restores functionality.
+Luckily, I can chase this down if I hurry, as I still have access to a
+pre-upgrade machine which can build maxima with debugging symbols.
+
+I would be greatly appreciative, though, if anyone had an insight as
+to where to look in advance.
+
+Take care,
+
+-- 
+Camm Maguire			     			camm at enhanced.com
+==========================================================================
+"The earth is but one country, and mankind its citizens."  --  Baha'u'llah
+
+
+
+From camm at enhanced.com  Mon Jun 19 17:39:36 2000
+From: camm at enhanced.com (Camm Maguire)
+Date: 19 Jun 2000 12:39:36 -0400
+Subject: [Maxima] Re: source level debugging
+In-Reply-To: Bill Schelter's message of "Sat, 10 Jun 2000 10:09:02 -0500"
+Message-ID: <200104140403.XAA00583@linux34.ma.utexas.edu>
+
+Greetings!  Sorry to catch up on this so late ...
+
+OK, I'll include this file in the next package.
+
+BTW, did anyone see my earlier post regarding shared libc dependencies
+and segfaults I sent on Friday or thereabouts?  I'd greatly appreciate
+any insights you may have.
+
+Take care,
+
+Bill Schelter <wfs at math.utexas.edu> writes:
+
+>    Where should I get the "dbl" command, or what is the (modern?)
+>    equivalent?  Can you give me any other hints?
+> 
+> This is part of the elisp files in the gcl distribution.
+> 
+> There is a file dbl.el
+> 
+> and in it is the command dbl
+> 
+> If you copy those files to your emacs/lisp  directory then it will be
+> there.
+> 
+> I think there are some directions in the dbl.el file.
+> 
+> 
+> 
+>  
+> 
+> 
+
+-- 
+Camm Maguire			     			camm at enhanced.com
+==========================================================================
+"The earth is but one country, and mankind its citizens."  --  Baha'u'llah
+
+
+
+From willisb at unk.edu  Thu Sep 14 14:25:18 2000
+From: willisb at unk.edu (willisb at unk.edu)
+Date: Thu, 14 Sep 2000 08:25:18 -0500
+Subject: [Maxima] stopex.mc and powers for maxima 5.4
+Message-ID: <200104140403.XAA00591@linux34.ma.utexas.edu>
+
+Hi,
+
+I'm looking for a maxima (version 5.4) powers function and
+a working version of stopex.  If anyone can point me to
+these files, I'd appreciate it.
+
+I'm working on porting three Macsyma 422 programs to maxima;
+a macsyma-to-mathml translator, a  second order linear DE
+solver, and a clone of Macsyma's specfun library (about
+a dozen orthogonal polynomials).  Once I get them working,
+I'll make them freely available.
+
+Porting "back in time" twenty years is interesting; mostly
+I've only had to add simple utility functions such as second,
+op, and floor. For string functions ($stringp, $getchar, etc), I've
+added a few one line lisp programs.  Once I spent days porting
+a C++ program from gcc 2.7x to gcc 2.9x; compared to that
+experience, porting Macsyma 422 to maxima 5.4 has so far been
+a breeze.
+
+Specifically:
+
+1) I'm looking for the maxima (version 5.4)  powers function;
+my share2 directory has a usage file for powers, but no source file.
+I can't find the file on maxima's cvs at the University of Texas either.
+If anyone can point me to the source code for powers, I'd appreciate it.
+
+2) Maxima's stopex code seems to be  broken;  stopex.mc
+won't even load.  It halts when executing
+
+EVAL_WHEN([BATCH,LOADFILE],
+       IF GET('GNAUTO,'DIAGEVAL_VERSION)=FALSE
+       THEN LOAD('[GNAUTO,FASL,DSK,DGVAL]))$
+
+Commenting out this line, allows maxima to load stopex.mc.
+But then maxima complains that it can't find the freeofl function.
+Rolling my own as
+
+freeofl(x,e) := block([ ],
+   not member(false, apply(append, [outermap(freeof, x, e)]))
+);
+
+allows expandwrt to run, but it generates rubbish:
+
+(c1) expandwrt(x*(x+1),x);
+
+(d1) [5x^2+4x(x+1)]
+
+Again, if anyone has a correctly working stopex.mc file, I'd
+appreciate it.
+
+Thanks,
+
+Barton Willis
+University of Nebraska at Kearney
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+From GHickey at nbpower.com  Fri Dec  1 18:32:36 2000
+From: GHickey at nbpower.com (Hickey, Gregory)
+Date: Fri, 1 Dec 2000 14:32:36 -0400
+Subject: [Maxima] FW: Macsyma
+Message-ID: <200104140405.XAA00613@linux34.ma.utexas.edu>
+
+Good afternoon, I had sent an earlier question to Paul S. Wang w.r.t.
+apparent demise of 'Macsyma' and 'PDEase' product line and he (as indicated
+below) referred me to you. Got time for a quick question?....Do you know to
+what extent both products (or their equivalent) may be available/supported
+in GNU project?
+Best Regards,
+Gregory A. Hickey, P. Eng.
+
+-----Original Message-----
+From:	Paul S. Wang [mailto:pwang at mcs.kent.edu]
+<mailto:[mailto:pwang at mcs.kent.edu]> 
+Sent:	November 28, 2000 4:22 PM
+To:	GHickey at nbpower.com <mailto:GHickey at nbpower.com> 
+Subject:	Re: Macsyma
+
+I don't really know.  But that is a good question.
+You may try
+wfs at fireant.ma.utexas.edu <mailto:wfs at fireant.ma.utexas.edu>  (Bill
+Schelter, AKCL/maxima)
+and see if Bill has any info.
+Paul> 
+	> Thank you very much. I have(had) a paid up maintenance agreement
+with them
+	> for operation of the program; do you know whether they went beyond
+Ver2.4,
+	> also what has happened to their 'PDEase' product..do you know if
+'PDEase' is
+	> also available through GNU effort? Again thank you for responding.
+/ Greg H.
+
+
+
+From boris at plmsc.psu.edu  Mon Jun 12 17:52:06 2000
+From: boris at plmsc.psu.edu (Boris Veytsman)
+Date: 12 Jun 2000 12:52:06 -0400
+Subject: [Maxima] [sci.math.symbolic] Problem/Bug in Maxima?
+Message-ID: <200104140416.XAA00872@linux34.ma.utexas.edu>
+
+I've found this letter in smc newsgroup... Please CC: the responces to
+the author.
+-- 
+Good luck
+
+-Boris
+http://www.plmsc.psu.edu/~boris/
+
+------- Start of forwarded message -------
+From: David Ronis <ronis at gibbs.chem.mcgill.ca>
+Subject: Problem/Bug in Maxima?
+Newsgroups: sci.math.symbolic
+Message-ID: <2p715.78$_r3.43895 at carnaval.risq.qc.ca>
+Date: Mon, 12 Jun 2000 15:33:18 GMT
+
+I've encountered what I think are two bugs in maxima.  I need to do 
+iterated integrals of the form:
+
+f[n](x):=p[n](x)+ W(x) + integrate(f[n-1](s[n-1]),s[n-1],0,x);
+f[0](x):=0;
+
+where p[n](x) is a low-order polynomial (defined explicitly) and W(x)
+is an unknown function.  I've decleared integrate linear.
+
+Here's what happens (say for p[n](x):=x):
+
+(C1) f[n](x):=p[n](x)+ W(x) + integrate(f[n-1](s[n-1]),s[n-1],0,x);
+
+(D1)    f (x) := p (x) + W(x) + INTEGRATE(f     (s     ), s     , 0, x)
+	 n	  n			   n - 1  n - 1	   n - 1
+(C2) f[0](x):=0;
+
+(D2) 				  f (x) := 0
+				   0
+(C3) declare(integrate,linear);
+
+(D3) 				     DONE
+(C4) p[n](x):=x;
+
+(D4) 				  p (x) := x
+				   n
+(C5) f[1](x);
+
+(D5) 				   W(x) + x
+(C6) f[2](x);
+
+(D6) 			   W(x) + (W(s ) + s ) x + x
+				      1	    1
+
+If instead I try:
+
+(C1) declare(integrate,linear);
+
+(D1) 				     DONE
+(C2) p[n](x):=x;
+
+(D2) 				  p (x) := x
+				   n
+(C3) f[n](x):=p[n](x)+ W(x) + integrate(f[n-1](s),s,0,x);
+
+(D3) 	     f (x) := p (x) + W(x) + INTEGRATE(f     (s), s, 0, x)
+	      n	       n		        n - 1
+(C4) f[0](x):=0;
+
+(D4) 				  f (x) := 0
+				   0
+(C5) f[1](x);
+
+(D5) 				   W(x) + x
+(C6) f[2](x);
+
+Is  x  positive, negative, or zero?
+
+pos;
+				    x		 x
+				   /	        /
+				   [	        [
+(D6) 		        W(x) + x + I  W(s) ds + I  s ds
+				   ]	        ]
+				   /	        /
+				    0		 0
+(C7) f[3](x);
+
+Is  x  positive, negative, or zero?
+
+pos;
+		  x  s		     x  s	     x		  x
+		 /  /		    /  /	    /		 /
+		 [  [		    [  [	    [		 [
+(D7)  W(x) + x + I  I  W(s) ds ds + I  I  s ds ds + I  W(s) ds + I  s ds
+		 ]  ]		    ]  ]	    ]		 ]
+		 /  /		    /  /	    /		 /
+		  0  0		     0  0	     0		  0
+(C8) f[4](x);
+
+Is  x  positive, negative, or zero?
+
+pos;
+		 x  s  s		  x  s  s	        x  s
+		/  /  /			 /  /  /	       /  /
+		[  [  [			 [  [  [	       [  [
+(D8) W(x) + x + I  I  I	 W(s) ds ds ds + I  I  I  s ds ds ds + I  I  W(s) ds ds
+		]  ]  ]			 ]  ]  ]	       ]  ]
+		/  /  /			 /  /  /	       /  /
+		 0  0  0		  0  0  0	        0  0
+
+					    x  s	    x		 x
+					   /  /		   /	        /
+					   [  [		   [	        [
+					 + I  I	 s ds ds + I  W(s) ds + I  s ds
+					   ]  ]		   ]	        ]
+					   /  /		   /	        /
+
+Which is slightly better but still wrong.  My questions are:
+
+1.  Why doesn't maxima do the trivial integral of x?  
+
+2.  How do I get it to properly change the symbol used for the
+integration variable and limits in multiple integrals?
+
+David
+
+------- End of forwarded message -------
+
+
+
+From camm at enhanced.com  Fri Jun 16 16:49:29 2000
+From: camm at enhanced.com (Camm Maguire)
+Date: 16 Jun 2000 11:49:29 -0400
+Subject: [Maxima] libc/ldso dependency in shared-lib maxima?
+In-Reply-To: Boris Veytsman's message of "12 Jun 2000 12:52:06 -0400"
+Message-ID: <200104140416.XAA00883@linux34.ma.utexas.edu>
+
+Greetings!  I maintain the Debian package of maxima, which has
+recently been accepted for installation into the unstable tree.  I've
+included Dr. Schelter's patch enabling shared (not static) linking to
+the system C and math libraries.  With this patch, we've had a working
+package in incoming for some time now.  
+
+Meanwhile, I forgot about maxima for a bit, upgraded my machine to the
+slightly newer versions of the Debian system packages, and suddenly
+maxima segfaults.  Another Debian user sees the same thing and has
+filed a bug.  Rebuilding on my upgraded system restores functionality.
+Luckily, I can chase this down if I hurry, as I still have access to a
+pre-upgrade machine which can build maxima with debugging symbols.
+
+I would be greatly appreciative, though, if anyone had an insight as
+to where to look in advance.
+
+Take care,
+
+-- 
+Camm Maguire			     			camm at enhanced.com
+==========================================================================
+"The earth is but one country, and mankind its citizens."  --  Baha'u'llah
+
+
+
+From willisb at unk.edu  Thu Sep 14 14:25:18 2000
+From: willisb at unk.edu (willisb at unk.edu)
+Date: Thu, 14 Sep 2000 08:25:18 -0500
+Subject: [Maxima] stopex.mc and powers for maxima 5.4
+Message-ID: <200104140416.XAA00888@linux34.ma.utexas.edu>
+
+Hi,
+
+I'm looking for a maxima (version 5.4) powers function and
+a working version of stopex.  If anyone can point me to
+these files, I'd appreciate it.
+
+I'm working on porting three Macsyma 422 programs to maxima;
+a macsyma-to-mathml translator, a  second order linear DE
+solver, and a clone of Macsyma's specfun library (about
+a dozen orthogonal polynomials).  Once I get them working,
+I'll make them freely available.
+
+Porting "back in time" twenty years is interesting; mostly
+I've only had to add simple utility functions such as second,
+op, and floor. For string functions ($stringp, $getchar, etc), I've
+added a few one line lisp programs.  Once I spent days porting
+a C++ program from gcc 2.7x to gcc 2.9x; compared to that
+experience, porting Macsyma 422 to maxima 5.4 has so far been
+a breeze.
+
+Specifically:
+
+1) I'm looking for the maxima (version 5.4)  powers function;
+my share2 directory has a usage file for powers, but no source file.
+I can't find the file on maxima's cvs at the University of Texas either.
+If anyone can point me to the source code for powers, I'd appreciate it.
+
+2) Maxima's stopex code seems to be  broken;  stopex.mc
+won't even load.  It halts when executing
+
+EVAL_WHEN([BATCH,LOADFILE],
+       IF GET('GNAUTO,'DIAGEVAL_VERSION)=FALSE
+       THEN LOAD('[GNAUTO,FASL,DSK,DGVAL]))$
+
+Commenting out this line, allows maxima to load stopex.mc.
+But then maxima complains that it can't find the freeofl function.
+Rolling my own as
+
+freeofl(x,e) := block([ ],
+   not member(false, apply(append, [outermap(freeof, x, e)]))
+);
+
+allows expandwrt to run, but it generates rubbish:
+
+(c1) expandwrt(x*(x+1),x);
+
+(d1) [5x^2+4x(x+1)]
+
+Again, if anyone has a correctly working stopex.mc file, I'd
+appreciate it.
+
+Thanks,
+
+Barton Willis
+University of Nebraska at Kearney
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+From GHickey at nbpower.com  Fri Dec  1 18:32:36 2000
+From: GHickey at nbpower.com (Hickey, Gregory)
+Date: Fri, 1 Dec 2000 14:32:36 -0400
+Subject: [Maxima] FW: Macsyma
+Message-ID: <200104140417.XAA00894@linux34.ma.utexas.edu>
+
+Good afternoon, I had sent an earlier question to Paul S. Wang w.r.t.
+apparent demise of 'Macsyma' and 'PDEase' product line and he (as indicated
+below) referred me to you. Got time for a quick question?....Do you know to
+what extent both products (or their equivalent) may be available/supported
+in GNU project?
+Best Regards,
+Gregory A. Hickey, P. Eng.
+
+-----Original Message-----
+From:	Paul S. Wang [mailto:pwang at mcs.kent.edu]
+<mailto:[mailto:pwang at mcs.kent.edu]> 
+Sent:	November 28, 2000 4:22 PM
+To:	GHickey at nbpower.com <mailto:GHickey at nbpower.com> 
+Subject:	Re: Macsyma
+
+I don't really know.  But that is a good question.
+You may try
+wfs at fireant.ma.utexas.edu <mailto:wfs at fireant.ma.utexas.edu>  (Bill
+Schelter, AKCL/maxima)
+and see if Bill has any info.
+Paul> 
+	> Thank you very much. I have(had) a paid up maintenance agreement
+with them
+	> for operation of the program; do you know whether they went beyond
+Ver2.4,
+	> also what has happened to their 'PDEase' product..do you know if
+'PDEase' is
+	> also available through GNU effort? Again thank you for responding.
+/ Greg H.
+
+
+

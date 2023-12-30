@@ -1,0 +1,100 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 22.04.0 ] */
+/* [wxMaxima: input   start ] */
+/* Date: Sat Dec 18 09:02:05 WET 2004 */
+/* Contributor: Andrej Vodopivec */
+/* Description: tries to use gnuplot to plot */
+gnuplot_curves(l) := block(
+    [numer:true, display2d:false],
+    with_stdout(
+        "maxout.gnuplot",
+        print("set zeroaxis"),
+        print("plot '-' with lines 1"),
+        for x in l do print(x[1], x[2])
+    ),
+    system("gnuplot -persist maxout.gnuplot")
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Sun Dec 19 22:55:29 WET 2004 */
+/* Contributor: Mario Rodriguez */
+/* Description: tries to use gnuplot to plot */
+dataplot(data):=block(
+    [numer:true, total:length(data), lin:linel],
+    with_stdout(
+        "points.data",
+        for k from 1 thru total do print(string(data[k][1]), string(data[k][2]))
+    ),
+    s1:sconcat(
+        "set terminal postscript eps; ",
+        "set out 'dataplot.eps';      ",
+        "set data style lines;        ",
+        "plot 'points.data';          "
+    ),
+    linel:30,
+    with_stdout(
+        "source_eps.gp",
+        print(s1)
+    ),
+    s2:sconcat(
+        "set terminal x11;            ",
+        "set data style lines;        ",
+        "plot 'points.data';          ",
+        "pause -1;                    "
+    ),
+    with_stdout(
+        "source_x11.gp",
+        print(s2)
+    ),
+    linel:lin,
+    system("gnuplot source_x11.gp"),
+    "bye!"
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Thu Apr 28 15:28:29 WEST 2005 */
+/* Contributor: Mario Rodriguez */
+/* Description: returns a fractal */
+/* Note: the functions works with ImageMagick, but omitting all the system part
+    and putting m instead allows to use the function with draw */
+fract(xmin,xmax,ymin,ymax,nr,nc,c):=block(
+    [maxcolor:1,maxiter:50,bound:100,zn,zn1,m,dx,dy,k,numer:true],
+    m: zeromatrix(nr,nc),
+    dx:(xmax-xmin)/nc,
+    dy:(ymax-ymin)/nr,
+    for i:1 thru nr do for j:1 thru nc do (
+        zn:(xmin+(j-1)*dx) +%i*(ymin+i*dy),
+        k:1,
+        while k<=maxiter and abs(zn)<bound do (
+            zn1: expand(c*zn*(1-zn)),
+            zn:zn1,
+            k:k+1
+        ),
+        m[i,j]:if k>maxiter then 1 else 0
+    ),
+
+        /* removes previous file fractal.pnm, if any */
+        system("rm fractal.pnm"),
+
+        /* saving the image in pnm format */
+        with_stdout("fractal.pnm",
+                print("P2"),
+                print(nr, nc),
+                print(maxcolor),
+                for i:1 thru nr do
+                        for j:1 thru nc do
+                                print(m[i,j])),
+
+        /* call ImageMagick and paint this sort of insect */
+        system("display fractal.pnm")
+)$
+/* [wxMaxima: input   end   ] */
+
+
+
+/* Old versions of Maxima abort on loading files that end in a comment. */
+"Created with wxMaxima 22.04.0"$

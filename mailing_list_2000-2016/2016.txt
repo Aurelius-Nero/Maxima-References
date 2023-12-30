@@ -1,0 +1,551 @@
+From bogus@does.not.exist.com  Wed Jan 27 11:49:03 2016
+From: bogus@does.not.exist.com ()
+Date: Wed, 27 Jan 2016 11:49:03 -0000
+Subject: No subject
+Message-ID: <mailman.0.1453895344.23882.maxima-discuss@def.fe.up.pt>
+
+(%i6) :lisp #$'G(x)$;
+
+((%g SIMP) $X)
+
+(%i7) :lisp #$'(''F)(x)$;
+
+(($g SIMP) $X)
+
+
+extra quoting doesn't help:
+(%i8) 'G(x) - '('(''F))(x);
+(%o8)                           'G(x) - 'G(x)
+
+(%i9) ev(%);
+(%o9)                           'G(x) - G(x)
+
+
+but
+
+(%i10) 'G(x) - 'G(x);
+(%o10)                                 0
+
+and
+
+(%i11) :lisp #$'('(''F))(x)$;
+
+((MQAPPLY SIMP) ((MQUOTE SIMP) $g) $X)
+
+
+
+Please help!
+
+
+-- 
+    ????? ????????, ??????.
+    http://landau.phys.spbu.ru/~kirr/aiv/
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 189 bytes
+Desc: Digital signature
+Url : http://www.math.utexas.edu/pipermail/maxima/attachments/20070119/46671b79/attachment-0001.pgp 
+
+
+From bogus@does.not.exist.com  Wed Jan 27 11:51:41 2016
+From: bogus@does.not.exist.com ()
+Date: Wed, 27 Jan 2016 11:51:41 -0000
+Subject: No subject
+Message-ID: <mailman.0.1453895528.23885.maxima-discuss@def.fe.up.pt>
+
+
+
+Rupert
+
+P.S. Sorry if two copies of this appear - I sent the first one via gmane
+and it appears to have silently got eaten.
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 315 bytes
+Desc: not available
+Url : http://www.math.utexas.edu/pipermail/maxima/attachments/20090916/a5d0de9e/attachment.pgp 
+
+
+From bogus@does.not.exist.com  Wed Jan 27 11:51:41 2016
+From: bogus@does.not.exist.com ()
+Date: Wed, 27 Jan 2016 11:51:41 -0000
+Subject: No subject
+Message-ID: <mailman.1.1453895528.23885.maxima-discuss@def.fe.up.pt>
+
+
+
+Rupert
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 315 bytes
+Desc: not available
+Url : http://www.math.utexas.edu/pipermail/maxima/attachments/20090916/b9eca02a/attachment.pgp 
+
+
+From bogus@does.not.exist.com  Wed Jan 27 11:52:46 2016
+From: bogus@does.not.exist.com ()
+Date: Wed, 27 Jan 2016 11:52:46 -0000
+Subject: No subject
+Message-ID: <mailman.0.1453895569.23886.maxima-discuss@def.fe.up.pt>
+
+as a long chain of multiplications only and begin applying rightmost operators
+step by step. Indeed maxima can do this if I help a little bit:
+
+(%i31) (R.R.L.R).(R.R.L.R).ket(j);
+                  3/2                    3/2
+(%o31)     (j + 1)    sqrt(j + 2) (j + 3)    sqrt(j + 4) ket(j + 4)
+
+(%i32) R.R.L.R.R.R.L.R.ket(j);
+                  3/2                    3/2
+(%o32)     (j + 1)    sqrt(j + 2) (j + 3)    sqrt(j + 4) ket(j + 4)
+
+
+But factor() or expand() do not help. May be there is just another flag
+like dotscrules?
+
+
+> Note that these simplification rules already contain your commutation
+> relation.
+
+But only when the operator is applied to a ket.
+A single R.L-L.R does not somplify to Id.
+
+The explicit ruleset is able to do:
+
+(%i26) L.R-R.L;
+(%o26)                                 I
+
+Anyway, thanks for your great help!
+
+
+-- Raoul
+
+
+From bogus@does.not.exist.com  Wed Jan 27 11:52:46 2016
+From: bogus@does.not.exist.com ()
+Date: Wed, 27 Jan 2016 11:52:46 -0000
+Subject: No subject
+Message-ID: <mailman.1.1453895573.23886.maxima-discuss@def.fe.up.pt>
+
+These are either true named parameters or simulated with
+data structures. Some of the examples without true
+named parameters are conventions, a few are example implementations.
+
+Ada           =>
+AppleScript   :
+AutoHotkey    =
+C++           foo(foo_params(42).x(7).z(23.54));
+Clojure       :key   (like lisp)
+Common lisp   :key  (no infix)
+E             =>
+Fortran 95    =
+Haskell       ' '   
+J             =
+JavaScript    :
+Modula-3      :=
+Objective-C   :
+OCaml         :    ~key:val  (needs ~)
+Oz            :
+Perl          =>
+Python        =  (there areseveral kinds, * and ** are identifier prefixes)
+Ruby          =>
+Scala         =
+Scheme        'key   (no infix)
+Smalltalk     :
+Suneido       :
+Tcl           -key val
+VB            :=
+
+
+From bogus@does.not.exist.com  Wed Jan 27 11:52:46 2016
+From: bogus@does.not.exist.com ()
+Date: Wed, 27 Jan 2016 11:52:46 -0000
+Subject: No subject
+Message-ID: <mailman.2.1453895575.23886.maxima-discuss@def.fe.up.pt>
+
+octave:1> 0:-3:10
+ans = [](1x0)
+
+I got empty matrix it is correct. 
+
+
+From bogus@does.not.exist.com  Wed Jan 27 11:52:46 2016
+From: bogus@does.not.exist.com ()
+Date: Wed, 27 Jan 2016 11:52:46 -0000
+Subject: No subject
+Message-ID: <mailman.3.1453895575.23886.maxima-discuss@def.fe.up.pt>
+
+octave:2> 0:3:10
+ans =
+    0    3    6    9
+
+I got results as expected.
+
+The problem in Maxima is when we use variables:
+a:0;
+b:10;
+k:-3;
+m:[];
+and write the code:
+for i:a step k thru b do (m:append(m, [i]), display(i))$
+
+This loop shouldn't execute, but this loop go forever (!!!) writing: i=0, 
+i=-3, i=-6, ..., i=infinity, but when I write this same code with numbers in 
+the loop, it work as expected:
+
+m:[];
+for i:0 step -3 thru 10 do (m:append(m, [i]), display(i))$
+display(m)$
+     m = []
+
+and the result is empty list m=[].
+
+
+> --
+> Mario
+
+
+
+From bogus@does.not.exist.com  Wed Jan 27 11:52:46 2016
+From: bogus@does.not.exist.com ()
+Date: Wed, 27 Jan 2016 11:52:46 -0000
+Subject: No subject
+Message-ID: <mailman.4.1453895582.23886.maxima-discuss@def.fe.up.pt>
+
+Rupert
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 315 bytes
+Desc: not available
+URL: <http://www.math.utexas.edu/pipermail/maxima/attachments/20100928/6b1d34ce/attachment.pgp>
+
+
+From bogus@does.not.exist.com  Wed Jan 27 11:52:46 2016
+From: bogus@does.not.exist.com ()
+Date: Wed, 27 Jan 2016 11:52:46 -0000
+Subject: No subject
+Message-ID: <mailman.5.1453895586.23886.maxima-discuss@def.fe.up.pt>
+
+  load(atensor);
+  init_atensor(quaternion);
+
+But then it starts talking about matrices, but quaternions are not
+matrices, just a real number and three imaginary numbers. So I cannot
+make any sense out of this.
+
+How do I define a quaternion variable, how do I multiply two of those?
+
+How do I conjugate, invert, logarithm, etc... a quaternion?
+
+
+please help
+-- 
+Janek Kozicki                               http://janek.kozicki.pl/
+
+
+
+From bogus@does.not.exist.com  Wed Jan 27 11:53:28 2016
+From: bogus@does.not.exist.com ()
+Date: Wed, 27 Jan 2016 11:53:28 -0000
+Subject: No subject
+Message-ID: <mailman.0.1453895625.23887.maxima-discuss@def.fe.up.pt>
+
+Note that "rhs(first(sol))" above says to take the first thing in the
+sol list (ie the equation) and then take its right hand side.
+
+Does this solve your problem for you?
+
+
+Rupert
+
+
+
+PS Regarding your Maple example, I logged into a University computer to
+   check it out. Note that the response to your implicit diff line looks
+   like
+
+   > implicitdiff(cp,lambda,s_a);
+                                                           2
+                                    s_o (m_2 lambda + 3 s_a  m_3)
+                                    -----------------------------
+                                               2
+                                       3 lambda  - s_o s_a m_2
+
+   This doesn't have the left hand dlam/ds_a part, so substitution
+   actually makes sense.
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 315 bytes
+Desc: not available
+URL: <http://www.math.utexas.edu/pipermail/maxima/attachments/20111005/98bdd01f/attachment.pgp>
+
+
+From bogus@does.not.exist.com  Wed Jan 27 11:53:28 2016
+From: bogus@does.not.exist.com ()
+Date: Wed, 27 Jan 2016 11:53:28 -0000
+Subject: No subject
+Message-ID: <mailman.1.1453895636.23887.maxima-discuss@def.fe.up.pt>
+
+This is just my opinion: I'm a Maxima and Lisp user, but definitely not
+a Maxima developer. I might well be right, though.
+
+> Also it will be possible to develop some maxima graphical interface
+> using pure-lisp solutions.
+
+Is that an assertion or a question?
+
+
+Rupert
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 315 bytes
+Desc: not available
+URL: <http://www.math.utexas.edu/pipermail/maxima/attachments/20111228/878b8fff/attachment.pgp>
+
+
+From bogus@does.not.exist.com  Wed Jan 27 11:54:15 2016
+From: bogus@does.not.exist.com ()
+Date: Wed, 27 Jan 2016 11:54:15 -0000
+Subject: No subject
+Message-ID: <mailman.1.1453895658.23888.maxima-discuss@def.fe.up.pt>
+
+Maybe there is a list of functions that would be useful in a general
+teaching/learning package. I suspect they'd be reasonably easy to
+write. Do you have any other suggestions for some that should appear?
+
+Rupert
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 315 bytes
+Desc: not available
+URL: <http://www.math.utexas.edu/pipermail/maxima/attachments/20120208/66142690/attachment.pgp>
+
+
+From bogus@does.not.exist.com  Wed Jan 27 11:54:15 2016
+From: bogus@does.not.exist.com ()
+Date: Wed, 27 Jan 2016 11:54:15 -0000
+Subject: No subject
+Message-ID: <mailman.2.1453895663.23888.maxima-discuss@def.fe.up.pt>
+
+Or just tell me Maxima is not well suited to numeric computing,
+then convince me to try something else.
+
+I'm considering to output these numbers to a pipe and spawn the
+gnuplot myself, is it recommended?
+
+Thank you.
+
+-- 
+Carl Lei (XeCycle)
+Department of Physics, Shanghai Jiao Tong University
+OpenPGP public key: 7795E591
+Fingerprint: 1FB6 7F1F D45D F681 C845 27F7 8D71 8EC4 7795 E591
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 489 bytes
+Desc: not available
+URL: <http://www.math.utexas.edu/pipermail/maxima/attachments/20120512/67fa8e90/attachment.pgp>
+
+
+From bogus@does.not.exist.com  Wed Jan 27 11:55:03 2016
+From: bogus@does.not.exist.com ()
+Date: Wed, 27 Jan 2016 11:55:03 -0000
+Subject: No subject
+Message-ID: <mailman.0.1453895706.23889.maxima-discuss@def.fe.up.pt>
+
+Does this sound like it'd be a good solution? If so, I'll sit down and
+write some patches.
+
+Rupert
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 315 bytes
+Desc: not available
+URL: <http://www.math.utexas.edu/pipermail/maxima/attachments/20130221/4a2a5039/attachment.pgp>
+
+
+From bogus@does.not.exist.com  Wed Jan 27 11:55:03 2016
+From: bogus@does.not.exist.com ()
+Date: Wed, 27 Jan 2016 11:55:03 -0000
+Subject: No subject
+Message-ID: <mailman.1.1453895709.23889.maxima-discuss@def.fe.up.pt>
+
+It would be interesting to dissect how exactly wxmaxima communicates with maxima, since this works on all
+platforms. As a matter of fact, this is done in some cases according to the workaround i have described:
+
+in wxMaxima.cpp
+        command = files[0];
+        command.Append(wxString::Format(
+                         wxT(" -eval \"(maxima::start-client %d)\" -eval \"(run)\" -f"),
+                         m_port
+                       ));
+      }
+    }
+    else
+      command.Append(wxString::Format(wxT(" -s %d"), m_port));
+    wxSetEnv(wxT("home"), wxGetHomeDir());
+    wxSetEnv(wxT("maxima_signals_thread"), wxT("1"));
+#else
+    command.Append(wxString::Format(wxT(" -r \":lisp (setup-client %d)\""),
+                                    m_port));
+#endif
+
+ 
+--
+
+Michel Talon
+talon at lpthe.jussieu.fr
+
+
+
+
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://www.math.utexas.edu/pipermail/maxima/attachments/20130327/f8ed6031/attachment-0001.html>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: smime.p7s
+Type: application/pkcs7-signature
+Size: 2825 bytes
+Desc: not available
+URL: <http://www.math.utexas.edu/pipermail/maxima/attachments/20130327/f8ed6031/attachment-0001.bin>
+
+
+From bogus@does.not.exist.com  Wed Jan 27 11:55:03 2016
+From: bogus@does.not.exist.com ()
+Date: Wed, 27 Jan 2016 11:55:03 -0000
+Subject: No subject
+Message-ID: <mailman.2.1453895713.23889.maxima-discuss@def.fe.up.pt>
+
+you also want a call to tdzero or tdpn with the difference between the
+two terms?
+
+Rupert
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 315 bytes
+Desc: not available
+URL: <http://www.math.utexas.edu/pipermail/maxima/attachments/20130522/36e9c2c8/attachment.pgp>
+
+
+From bogus@does.not.exist.com  Wed Jan 27 11:55:03 2016
+From: bogus@does.not.exist.com ()
+Date: Wed, 27 Jan 2016 11:55:03 -0000
+Subject: No subject
+Message-ID: <mailman.3.1453895714.23889.maxima-discuss@def.fe.up.pt>
+
+  (%i53) x_roots: subst(0, %i, almost_x_roots);
+  (%o53) [.3926990816987195, - 2.748893571891074, - 1.17809724509617, 
+                       1.963495408493623, .2617993877991614, - 2.879793265790632]
+
+Oh, and these are sometimes in the wrong 2*%pi-long interval, so let's
+fix that:
+
+  (%i57) x_roots_in_interval: map(lambda([x], mod(x, float(2*%pi))), x_roots);
+  (%o57) [.3926990816987195, 3.534291735288512, 5.105088062083416, 
+                         1.963495408493623, .2617993877991614, 3.403392041388954]
+
+Incidentally, I made a slight mistake when working that out the first
+time, and wrote:
+
+  (%i58) map(lambda([x], mod(x, float(%pi))), x_roots);
+  (%o58) [.3926990816987195, .3926990816987193, 1.963495408493623, 
+                         1.963495408493623, .2617993877991614, .2617993877991611]
+
+Given that the pairs of square roots were next to each other in our
+list, this shows that the roots are actually %pi-periodic and the
+positive and negative square roots pick out the solutions on the odd and
+even intervals. Rather neat, considering that the function itself
+doesn't have any obvious symmetries (looking at a graph). Anyone know a
+nice mathematical explanation for this?
+
+
+Now let's go back to the bit where we spotted the magic numbers. Notice
+that
+
+  (%i75) map(lambda([z0], expand(subst(z0, z, lhs(eq5)-rhs(eq5)))),
+             [(1 + %i)/sqrt(2), -(1 + %i)/sqrt(2), sqrt(3)/2+%i/2]);
+  (%o75)                             [0, 0, 0]
+
+So we actually have the solutions. In fact, they have very nice
+numerical answers. Taking logarithms, we get the following six answers:
+
+  (%i105) y_roots: flatten(map(lambda([x], [sqrt(x), -sqrt(x)]),
+                              [(1+%i)/sqrt(2), -(1+%i)/sqrt(2), sqrt(3)/2+%i/2]))$
+
+  (%i106) x_roots: map(lambda([y], rectform(log(y)/%i)), y_roots);
+                    %pi    7 %pi    3 %pi  5 %pi  %pi    11 %pi
+  (%o106)          [---, - -----, - -----, -----, ---, - ------]
+                     8       8        8      8    12       12
+
+and we can force them into the expected intervals with
+
+  (%i108) x_roots_in_interval: map(lambda([x], mod(x, 2*%pi)), x_roots);
+                      %pi  9 %pi  13 %pi  5 %pi  %pi  13 %pi
+  (%o108)            [---, -----, ------, -----, ---, ------]
+                       8     8      8       8    12     12
+
+Incidentally, taking the original numerical answers as num_xrii, you can
+do the following:
+
+  (%i125) num_xrii / float(%pi);
+  (%o125) [.1249999999999985, 1.124999999999998, 1.625000000000001, 
+                   .6250000000000009, .08333333333333715, 1.083333333333337]
+
+and at least the first four are obviously recognizable. Phew!
+
+Questions:
+==========
+
+ (1) Natasha, was your original question a homework question? If you
+     waded through this whole email, I don't feel too guilty for having
+     answered it. But this probably wasn't the approach the homework
+     setter expected you to follow. (Spotting that 0.707... is a
+     numerical solution kind of requires a computer...) If so, was there
+     some sort of hint?
+
+ (2) I'm still mystified by the fact that the two roots in each square
+     root give the roots over the two length-%pi intervals. Anyone got
+     any idea why?
+
+ (3) Why did algsys give such a horrible answer on the cubic, I wonder?
+
+Anyway, Natasha, I hope this answered your original question. I may have
+written slightly more than you were after, but I was enjoying myself :-)
+
+Rupert
+
+
+PS: Natasha, your email was held in a moderation queue because you're
+    not subscribed to the mailing list. If you want your emails to
+    appear more quickly, I recommend subscribing.
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 315 bytes
+Desc: not available
+URL: <http://www.math.utexas.edu/pipermail/maxima/attachments/20130615/a58059ee/attachment.pgp>
+
+

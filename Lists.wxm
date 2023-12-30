@@ -1,0 +1,206 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 22.04.0 ] */
+/* [wxMaxima: input   start ] */
+/* Date: Sun Oct 18 09:41:19 WEST 2015 */
+/* Contributor: Marco Verpelli */
+/* Description: Code for retrieving the nth element of a list (the "else last(l)" can be ommitted putting <= instead of <) */
+nth(l, n) := if n < length(l) then first(rest(l, n-1)) else last(l);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Mon Feb 17 03:07:15 WET 2003 */
+/* Contributor: Stavros Macrakis */
+/* Description: applies for all */
+forall(func,list) := apply("and",map(func,list))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Sun Dec 7 18:31:31 WET 2003 */
+/* Contributor: Stavros Macrakis */
+/* Description: returns the n first terms of the list l */
+firstn(l,n):=rest(l,n-length(l))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Sun Dec 7 18:44:22 WET 2003 */
+/* Contributor: Richard Fateman */
+/* Description: returns the  terms of the list k between indices r+1 and s */
+listheader: ?car([])$
+f(k,r,s):=block(
+    [simp:off],
+    ?cons(listheader,?subseq(?cdr(k),r,s))
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Fri Dec 26 17:44:36 WET 2003 */
+/* Contributor: Stavros Macrakis */
+/* Description: copies a list */
+copyall(l):=if listp(l) then map('copyall,l) else l$
+copyallall(l):=block(
+    [inflag:true],   /* operate on internal forms */
+    if atom(l) or subvarp(l) then l 
+    else funmake(copyallall(part(l,0)),map('copyallall,args(l)))
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: 2017-07-10 15:38:43 UTC */
+/* Contributor: Stavros Macrakis */
+/* Description: returns a set with the duplicated elements of the list l */
+dups(l) :=block(
+    [res : []],
+    while l # [] do (
+        if member(first(l), rest(l)) then push(first(l), res),
+        l : rest(l)
+    ),
+    setify(res)
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: 2017-07-10 15:38:43 UTC */
+/* Contributor: Stavros Macrakis */
+/* Description: returns a list with the duplicated elements of the list l */
+dups(l) :=block(
+    [dups:[],counts],
+    local(counts),
+    counts[x]:=0,
+    for i in l do counts[i]: counts[i]+1,
+    for i in rest(arrayinfo(counts),2) do if counts[first(i)]>1 then push(first(i),dups),
+    dups
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Wed May 19 21:12:31 WEST 2010 */
+/* Contributor: Piotr Słomski */
+/* Description: Intended implementation of Mathematica tuples */
+Tuples(S, N):=block(
+    K:length(S),
+    counter:create_list(1, i, 1, N),
+    res:[create_list(S[counter[i]],i,1,N)],
+    for i:1 thru K^N-1 do (
+        counter[1]:counter[1]+1,
+        for j:1 thru N-1 do (
+            if counter[j]>K then (
+                counter[j]:1,
+                counter[j+1]:counter[j+1]+1
+            ) else (
+                return
+            )
+        ),
+        res:append(res, [create_list(S[counter[i]],i,1,N)])
+    ),
+    res
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Thu May 20 17:44:38 WEST 2010 */
+/* Contributor: Mario Rodriguez */
+/* Description: Intended implementation of Mathematica tuples */
+tuples(lis, n) :=block(
+    [ len_lis, aux_lis, aux_set, cart_prod],
+    len_lis : length(lis),
+    aux_lis : makelist(?gensym(),k,1,len_lis),
+    aux_set : setify(aux_lis),
+    cart_prod : apply(cartesian_product, makelist(aux_set,k,1,n)),
+    subst(map("=", aux_lis, lis), listify(cart_prod))
+) $
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Wed Dec 11 03:57:16 WET 2002 */
+/* Contributor: Stavros Macrakis */
+/* Description: Filters a list with respect to a predicate (as sublist does) */
+filter(f,l):=if l=[] then [] 
+elseif f(first(l)) then cons(first(l),filter(f,rest(l))) 
+else filter(f,rest(l))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Tue Dec 9 21:52:46 WET 2003 */
+/* Contributor: Richard Fateman */
+/* Description: Filters a list with respect to a predicate (as sublist does) */
+selectif(pred,set):= if set=[] then set 
+else if pred(first(set)) then cons(first(set),selectif(pred,rest(set))) 
+else selectif(pred,rest(set))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Fri Aug 4 17:06:41 WEST 2006 */
+/* Contributor: Richard Fateman */
+/* Description: Filters a list with respect to a predicate (as sublist does) */
+filter(l,pred):= if (l=[]) then [] 
+else if pred(first(l)) then cons(first(l),filter(rest(l),pred)) 
+else filter(rest(l),pred)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: 20/03/2014 */
+/* Contributor: Pankaj Sejwal */
+/* Description: Tries to return the entries and the indexes that satisfies a predicate for first and single time */
+takewhile(x,p):=block(
+    [s:1,temp:[],temp1:[],count:1,xx:create_list([x[i],i],i,makelist(i,i,length(x)))],
+    for i in xx do if apply(p,[first(i)])  then temp:cons(i,temp),
+    temp:reverse(temp),
+    if (length(temp)>=2 and flatten(temp)#[]) then (
+        while(last(temp[s])+1=last(temp[s+1]) and count<=length(temp)) do (
+            temp1:cons(temp[s],temp1),
+            count:count+1,
+            s:s+1
+        ),
+        if (s<length(temp)) then temp1:cons(temp[s],temp1)
+    ) 
+    else temp1:temp,
+    reverse(temp1)
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: 20/03/2014 */
+/* Contributor: Pankaj Sejwal */
+/* Description: Tries to return the entries and the indexes that satisfies a predicate for first and single time */
+takewhile1(x,p):=block(
+    [s:1,temp:[],temp1:[],count:1,xx:create_list([x[i],i],i,makelist(i,i,length(x)))],
+    for i in xx do (if parse_string(concat(first(i),p))  then temp:cons(i,temp)),
+    temp:reverse(temp),
+    if(length(temp)>=2 and flatten(temp)#[]) then (
+        while (last(temp[s])+1=last(temp[s+1]) and count<=length(temp)) do (
+            temp1:cons(temp[s],temp1),
+            count:count+1,
+            s:s+1
+        ),
+        if(s<length(temp)) then temp1:cons(temp[s],temp1)
+    )
+    else temp1:temp,
+    reverse(temp1)
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Date: Mon Aug 29 01:28:25 WEST 2005 */
+/* Contributor: Richard Fateman  */
+/* Description: it is similar to lreduce */
+dominate(fun,list,default):=if emptyp(list) then default else dominate(fun,rest(list),fun(first(list),default));
+/* [wxMaxima: input   end   ] */
+
+
+
+/* Old versions of Maxima abort on loading files that end in a comment. */
+"Created with wxMaxima 22.04.0"$
